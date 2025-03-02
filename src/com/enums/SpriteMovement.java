@@ -7,6 +7,7 @@ public enum SpriteMovement
     ATTACK03,
     IDLE,
     JUMP,
+    FALL,
     RUN,
     WALK,
     DEATH,

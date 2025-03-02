@@ -41,6 +41,8 @@ import static com.raylib.Raylib.beginMode2D;
 import static com.raylib.Raylib.endMode2D;
 import static com.raylib.Raylib.endTextureMode;
 import static com.raylib.Raylib.WHITE;
+
+import com.enums.SpriteMovement;
 import com.objects.Platform;
 import com.raylib.Camera2D;
 
@@ -94,17 +96,26 @@ public class Core
 
 	public void update()
 	{
-		// Mettre à jour la position de la caméra pour suivre le joueur
+		// For adjust the camera to follow the player
 		Camera2D mainCam = cameras.getMainCamera();
 		mainCam.setTarget(player.getPosition());
 		cameras.setMainCamera(mainCam);
-		System.out.println("player colisionBox: " + player.getColisionBoxPlusOffset().getX() + ", " + player.getColisionBoxPlusOffset ().getY() + ", " + player.getColisionBox().getWidth() + ", " + player.getColisionBox().getHeight());
-		System.out.println("platformTest: " + platformTest.getPlatform().getX() + ", " + platformTest.getPlatform().getY() + ", " + platformTest.getPlatform().getWidth() + ", " + platformTest.getPlatform().getHeight());
+		// System.out.println("player colisionBox: " + player.getColisionBoxPlusOffset().getX() + ", " + player.getColisionBoxPlusOffset ().getY() + ", " + player.getColisionBox().getWidth() + ", " + player.getColisionBox().getHeight());
+		// System.out.println("platformTest: " + platformTest.getPlatform().getX() + ", " + platformTest.getPlatform().getY() + ", " + platformTest.getPlatform().getWidth() + ", " + platformTest.getPlatform().getHeight());
 
 		if (physicCore.getGravity().checkGroundCollision(player.getColisionBoxPlusOffset(), platformTest.getPlatform()))
 		{
+			if (player.getActionInProgress() == SpriteMovement.FALL || player.getActionInProgress() == SpriteMovement.JUMP)
+			{
+				player.setActionCounter(0);
+			}
+			
 			player.getVelocity().setY(0);
 			player.setIsJumping(false);
+		}
+		else
+		{
+			player.setIsJumping(true);
 		}
 
 		beginDrawing();

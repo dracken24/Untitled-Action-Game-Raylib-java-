@@ -23,6 +23,7 @@ import static com.raylib.Raylib.isMouseButtonPressed;
 import static com.raylib.Raylib.MouseButton.MOUSE_BUTTON_LEFT;
 
 import com.raylib.Vector2;
+import com.raylib.Rectangle;
 
 import com.objects.SpriteSheet;
 import com.enums.SpriteMovement;
@@ -53,6 +54,7 @@ public class Movement
 	boolean		rightSide;
 
     int actionCounter;
+    int attackCounter;
 
     Vector2 velocity;
     Vector2 lastPlayerPosition;
@@ -70,6 +72,7 @@ public class Movement
         currentAction = idle;
         lastAction = null;
         actionCounter = 0;
+        attackCounter = 0;
         velocity = new Vector2(0, 0);
         lastPlayerPosition = new Vector2(0, 0);
         isJumping = false;
@@ -94,6 +97,13 @@ public class Movement
         adjustVelocity();
         // System.out.println("velocity: " + velocity.getY());
         // System.out.println("isJumping: " + isJumping);
+        // System.out.println("actionCounter: " + actionCounter);
+
+        if (velocity.getY() >= 8 && attackCounter  == 0)
+        {
+            this.actionInProgress = SpriteMovement.FALL;
+            actionCounter = 0;
+        }
 
         lastPlayerPosition = playerPosition;
 	}
@@ -119,6 +129,13 @@ public class Movement
         }
     }
 
+    public Vector2 applyMovement(Vector2 position, Rectangle colisionBox, Vector2 velocity)
+    {
+        position.setX(position.getX() + velocity.getX());
+        colisionBox.setX(colisionBox.getX() + velocity.getX());
+        return position;
+    }
+
     void catchInput()
 	{
 		boolean isKeyDown = false;
@@ -132,50 +149,60 @@ public class Movement
 		{
 			rightSide = false;
             isKeyDown = true;
-            if (actionCounter == 0)
+            if (actionCounter == 0 && isJumping == false)
             {
                 this.actionInProgress = SpriteMovement.RUN;
+                velocity.setX(4);
             }
 		}
 		if (isKeyDown(KEY_A))
 		{
 			rightSide = true;
             isKeyDown = true;
-            if (actionCounter == 0)
+            if (actionCounter == 0 && isJumping == false)
             {
                 this.actionInProgress = SpriteMovement.RUN;
+                velocity.setX(-4);
             }
 		}
         if (isKeyPressed(KEY_SPACE))
 		{
-            isKeyDown = true;
-            isJumping = true;
-            if (actionCounter == 0)
+            if (actionCounter == 0 && isJumping == false)
             {
                 this.actionInProgress = SpriteMovement.JUMP;
                 actionCounter = jump.getAnimationTotalFrame();
             }
             if (velocity.getY() == 0)
             {
-                velocity.setY(-10);
+                velocity.setY(-14);
             }
+            isKeyDown = true;
+            isJumping = true;
 		}
 		if (isMouseButtonPressed(MOUSE_BUTTON_LEFT))
 		{
             isKeyDown = true;
-            this.actionInProgress = SpriteMovement.ATTACK01;
-            actionCounter = attack01.getAnimationTotalFrame();
+            if (attackCounter == 0)
+            {
+                this.actionInProgress = SpriteMovement.ATTACK01;
+                attackCounter = attack01.getAnimationTotalFrame();
+            }
 		}
 
         // System.out.println("actionCounter: " + actionCounter);
         // System.out.println("actionInProgress: " + actionInProgress);
-		if (!isKeyDown)
+		if (!isKeyDown && isJumping == false && attackCounter == 0)
 		{
 			this.actionInProgress = SpriteMovement.IDLE;
+            velocity.setX(0);
 		}
         if (actionCounter > 0)
         {
             actionCounter--;
+        }
+        if (attackCounter > 0)
+        {
+            attackCounter--;
         }
 	}
 
@@ -246,6 +273,16 @@ public class Movement
     public boolean getIsJumping()
     {
         return isJumping;
+    }
+
+    public int getActionCounter()
+    {
+        return actionCounter;
+    }
+
+    public SpriteMovement getActionInProgress()
+    {
+        return actionInProgress;
     }
 
 /***********************************************************************************/
@@ -328,6 +365,11 @@ public class Movement
         this.isJumping = isJumping;
     }
 
+    public void setActionCounter(int actionCounter)
+    {
+        this.actionCounter = actionCounter;
+    }
+
     public void setMovement(SpriteMovement movement)
     {
         switch (movement)
@@ -355,6 +397,9 @@ public class Movement
                 break;
             case HURT:
                 setCurrentAction(hurt);
+                break;
+            case FALL:
+                setCurrentAction(fall);
                 break;
         }
     }

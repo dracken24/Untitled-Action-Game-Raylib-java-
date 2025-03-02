@@ -20,6 +20,8 @@ import static com.raylib.Raylib.drawRectangleRec;
 import static com.raylib.Raylib.DARKGRAY;
 import static com.raylib.Raylib.WHITE;
 import static com.raylib.Raylib.DARKPURPLE;
+import static com.raylib.Raylib.KeyboardKey.KEY_R;
+import static com.raylib.Raylib.isKeyPressed;
 
 import com.raylib.Rectangle;
 
@@ -36,6 +38,8 @@ public class Player
 	int			scale;
 	Vector2		offset;
 
+	Vector2		initialPosition;
+	Rectangle	initialColisionBox;
 /***********************************************************************************/
 /***                                 CONSTRUCTOR                                   */
 /***********************************************************************************/
@@ -48,6 +52,8 @@ public class Player
 		this.scale = scale;
 		this.colisionBox = colisionBox;
 		this.offset = offset;
+		initialPosition = new Vector2(position.getX(), position.getY());
+		initialColisionBox = new Rectangle(colisionBox.getX(), colisionBox.getY(), colisionBox.getWidth(), colisionBox.getHeight());
 	}
 
 /***********************************************************************************/
@@ -58,7 +64,18 @@ public class Player
 	{
 		// drawSize();
 		drawColisionBox();
+		movement.applyMovement(position, colisionBox, movement.getVelocity());
 		movement.update(position, offset);
+
+		// TODO: For debug
+		// Reset position and colision box to initial position
+		if (isKeyPressed(KEY_R))
+		{
+			position = initialPosition;
+			colisionBox = initialColisionBox;
+			initialPosition = new Vector2(position.getX(), position.getY());
+			initialColisionBox = new Rectangle(colisionBox.getX(), colisionBox.getY(), colisionBox.getWidth(), colisionBox.getHeight());
+		}
 	}
 
 	void drawColisionBox()
@@ -121,6 +138,11 @@ public class Player
 		return movement.getIsJumping();
 	}
 
+	public SpriteMovement getActionInProgress()
+	{
+		return movement.getActionInProgress();
+	}
+
 /***********************************************************************************/
 /***                                 SETTERS                                       */
 /***********************************************************************************/
@@ -153,5 +175,10 @@ public class Player
 	public void setIsJumping(boolean isJumping)
 	{
 		movement.setIsJumping(isJumping);
+	}
+
+	public void setActionCounter(int actionCounter)
+	{
+		movement.setActionCounter(actionCounter);
 	}
 }
