@@ -20,6 +20,7 @@ import static com.raylib.Raylib.drawRectangleRec;
 import static com.raylib.Raylib.DARKGRAY;
 import static com.raylib.Raylib.WHITE;
 import static com.raylib.Raylib.DARKPURPLE;
+import static com.raylib.Raylib.KeyboardKey.KEY_B;
 import static com.raylib.Raylib.KeyboardKey.KEY_R;
 import static com.raylib.Raylib.isKeyPressed;
 
@@ -60,10 +61,19 @@ public class Player
 /***                                 FUNCTIONS                                     */
 /***********************************************************************************/
 
+	boolean isDebug = true;
 	public void update()
 	{
 		// drawSize();
-		drawColisionBox();
+		if (isKeyPressed(KEY_B))
+		{
+			isDebug = !isDebug;
+		}
+		if (isDebug)
+		{
+			drawColisionBox();
+		}
+		
 		movement.applyMovement(position, colisionBox, movement.getVelocity());
 		movement.update(position, offset);
 
@@ -180,5 +190,10 @@ public class Player
 	public void setActionCounter(int actionCounter)
 	{
 		movement.setActionCounter(actionCounter);
+	}
+
+	public void setIsWallCollide(boolean isWallCollide)
+	{
+		movement.setIsWallCollide(isWallCollide);
 	}
 }

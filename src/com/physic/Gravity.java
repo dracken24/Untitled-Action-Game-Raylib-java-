@@ -52,13 +52,41 @@ public class Gravity
         return position;
     }
 
-    public boolean checkGroundCollision(Rectangle colisionBox, Rectangle platform)
+    public String checkGroundCollision(Rectangle colisionBox, Rectangle platform)
     {
-        if (checkCollisionRecs(colisionBox, platform))
+        // Get the edges of the player
+        float playerLeft = colisionBox.getX();
+        float playerRight = colisionBox.getX() + colisionBox.getWidth();
+        float playerTop = colisionBox.getY();
+        float playerBottom = colisionBox.getY() + colisionBox.getHeight();
+        
+        float platformLeft = platform.getX();
+        float platformRight = platform.getX() + platform.getWidth();
+        float platformTop = platform.getY();
+        float platformBottom = platform.getY() + platform.getHeight();
+
+        // Check if there is a collision
+        if (playerRight >= platformLeft && playerLeft <= platformRight &&
+            playerBottom >= platformTop && playerTop <= platformBottom)
         {
-            return true;
+            // Get the penetration distances
+            float overlapLeft = playerRight - platformLeft;
+            float overlapRight = platformRight - playerLeft;
+            float overlapTop = playerBottom - platformTop;
+            float overlapBottom = platformBottom - playerTop;
+
+            // Get the smallest penetration
+            float minOverlap = Math.min(Math.min(overlapLeft, overlapRight), 
+                                      Math.min(overlapTop, overlapBottom));
+
+            // Return the side with the smallest penetration
+            if (minOverlap == overlapTop) return "BOTTOM"; // Le bas du joueur touche le haut de la plateforme
+            if (minOverlap == overlapBottom) return "TOP"; // Le haut du joueur touche le bas de la plateforme
+            if (minOverlap == overlapLeft) return "RIGHT"; // La droite du joueur touche la gauche de la plateforme
+            if (minOverlap == overlapRight) return "LEFT"; // La gauche du joueur touche la droite de la plateforme
         }
-        return false;
+        
+        return "NONE"; // No collision
     }
 
 /***********************************************************************************/

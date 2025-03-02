@@ -60,6 +60,7 @@ public class Movement
     Vector2 lastPlayerPosition;
 
     boolean isJumping;
+    boolean isWallCollide;
 
 /***********************************************************************************/
 /***                                 CONSTRUCTOR                                   */
@@ -76,6 +77,7 @@ public class Movement
         velocity = new Vector2(0, 0);
         lastPlayerPosition = new Vector2(0, 0);
         isJumping = false;
+        isWallCollide = false;
     }
 
 /***********************************************************************************/
@@ -95,9 +97,9 @@ public class Movement
 		currentAction.updateSprite(false, rightSide, playerPosition, offset);
         
         adjustVelocity();
-        // System.out.println("velocity: " + velocity.getY());
-        // System.out.println("isJumping: " + isJumping);
-        // System.out.println("actionCounter: " + actionCounter);
+        System.out.println("velocity: " + velocity.getY());
+        System.out.println("isJumping: " + isJumping);
+        System.out.println("actionCounter: " + actionCounter);
 
         if (velocity.getY() >= 8 && attackCounter  == 0)
         {
@@ -149,20 +151,34 @@ public class Movement
 		{
 			rightSide = false;
             isKeyDown = true;
-            if (actionCounter == 0 && isJumping == false)
+            velocity.setX(4);
+            if (actionCounter == 0 && isJumping == false )
             {
-                this.actionInProgress = SpriteMovement.RUN;
-                velocity.setX(4);
+                if (attackCounter == 0)
+                {
+                    this.actionInProgress = SpriteMovement.RUN;
+                }
+            }
+            else if (isWallCollide == true)
+            {
+                velocity.setX(0);
             }
 		}
 		if (isKeyDown(KEY_A))
 		{
 			rightSide = true;
             isKeyDown = true;
+            velocity.setX(-4);
             if (actionCounter == 0 && isJumping == false)
             {
-                this.actionInProgress = SpriteMovement.RUN;
-                velocity.setX(-4);
+                if (attackCounter == 0)
+                {
+                    this.actionInProgress = SpriteMovement.RUN;
+                }
+            }
+            else if (isWallCollide == true)
+            {
+                velocity.setX(0);
             }
 		}
         if (isKeyPressed(KEY_SPACE))
@@ -174,7 +190,7 @@ public class Movement
             }
             if (velocity.getY() == 0)
             {
-                velocity.setY(-14);
+                velocity.setY(-16);
             }
             isKeyDown = true;
             isJumping = true;
@@ -368,6 +384,11 @@ public class Movement
     public void setActionCounter(int actionCounter)
     {
         this.actionCounter = actionCounter;
+    }
+
+    public void setIsWallCollide(boolean isWallCollide)
+    {
+        this.isWallCollide = isWallCollide;
     }
 
     public void setMovement(SpriteMovement movement)

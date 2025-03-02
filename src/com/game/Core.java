@@ -58,7 +58,7 @@ public class Core
 
 	PhysicCore	physicCore;
 
-	Platform	platformTest;
+	Platform[]	platformTest;
 
 	Cameras	cameras;
 
@@ -78,7 +78,11 @@ public class Core
 		initPlayer();
 
 		// Initialize the platform
-		platformTest = new Platform(WindowSize.getX() / 2 - 150, WindowSize.getY() / 2 + 200, 300, 40);
+		platformTest = new Platform[4];
+		platformTest[0] = new Platform(WindowSize.getX() / 2 - 150, WindowSize.getY() / 2 + 200, 300, 40);
+		platformTest[1] = new Platform(WindowSize.getX() / 2 - 480, WindowSize.getY() / 2 + 360, 300, 40);
+		platformTest[2] = new Platform(WindowSize.getX() / 2 + 180, WindowSize.getY() / 2 + 360, 300, 40);
+		platformTest[3] = new Platform(WindowSize.getX() / 2 - 600, WindowSize.getY() / 2 + 520, 1200, 60);
 
 		physicCore = new PhysicCore();
 
@@ -103,31 +107,25 @@ public class Core
 		// System.out.println("player colisionBox: " + player.getColisionBoxPlusOffset().getX() + ", " + player.getColisionBoxPlusOffset ().getY() + ", " + player.getColisionBox().getWidth() + ", " + player.getColisionBox().getHeight());
 		// System.out.println("platformTest: " + platformTest.getPlatform().getX() + ", " + platformTest.getPlatform().getY() + ", " + platformTest.getPlatform().getWidth() + ", " + platformTest.getPlatform().getHeight());
 
-		if (physicCore.getGravity().checkGroundCollision(player.getColisionBoxPlusOffset(), platformTest.getPlatform()))
-		{
-			if (player.getActionInProgress() == SpriteMovement.FALL || player.getActionInProgress() == SpriteMovement.JUMP)
-			{
-				player.setActionCounter(0);
-			}
-			
-			player.getVelocity().setY(0);
-			player.setIsJumping(false);
-		}
-		else
-		{
-			player.setIsJumping(true);
-		}
+		// Check collisions between the player and the platforms
+		checkCollisions();
 
 		beginDrawing();
 			beginTextureMode(cameras.getMainTexture());
 				clearBackground(LIGHTGRAY);
 				beginMode2D(cameras.getMainCamera());
 				
-					Vector2 mousePosition = getMousePosition();
-					drawText("Mouse position: " + mousePosition.getX() + ", " + mousePosition.getY(), 10, 10, 20, VIOLET);
+					drawText("Deplacement Gauche Droite: A & D", 10, 150, 20, VIOLET);
+					drawText("Sauter : Espace", 10, 170, 20, VIOLET);
+					drawText("Attaque: Clic Gauche", 10, 190, 20, VIOLET);
+					drawText("B: Set Colision Box Visible", 10, 220, 20, VIOLET);
+					drawText("R: Reset Player Position", 10, 240, 20, VIOLET);
 				
 					// Draw the platform
-					platformTest.drawPlatform();
+					for (int i = 0; i < platformTest.length; i++)
+					{
+						platformTest[i].drawPlatform();
+					}
 					
 					// Update the player
 					player.update();
@@ -153,6 +151,69 @@ public class Core
 		endDrawing();
 	}
 
+	void checkCollisions()
+	{
+		boolean onGround = false;
+		for (int i = 0; i < platformTest.length; i++)
+		{
+			String collisionSide = physicCore.getGravity().checkGroundCollision(
+				player.getColisionBoxPlusOffset(), 
+				platformTest[i].getPlatform()
+			);
+			
+			if (collisionSide != "NONE")
+			{
+				switch(collisionSide)
+				{
+					case "BOTTOM": // The player lands on the platform
+						if (player.getActionInProgress() == SpriteMovement.FALL || 
+							player.getActionInProgress() == SpriteMovement.JUMP)
+						{
+							player.setActionCounter(0);
+						}
+						player.getVelocity().setY(0);
+						player.setIsJumping(false);
+						onGround = true;
+						
+						// Adjust the position of the player and his collision box
+						Rectangle playerBox = player.getColisionBoxPlusOffset();
+						Rectangle platform = platformTest[i].getPlatform();
+						float adjustment = playerBox.getY() + playerBox.getHeight() - platform.getY();
+						
+						// Adjust the position of the player
+						player.setPosition(new Vector2(
+							player.getPosition().getX(),
+							player.getPosition().getY() - adjustment
+						));
+						
+						// Adjust the position of the collision box
+						Rectangle colBox = player.getColisionBox();
+						colBox.setY(colBox.getY() - adjustment);
+						player.setColisionBox(colBox);
+						break;
+
+					case "TOP": // The player hits the bottom of the platform
+						player.getVelocity().setY(1);
+						break;
+
+					case "LEFT": // The player hits the right side of the platform
+					case "RIGHT": // The player hits the left side of the platform
+						player.getVelocity().setX(0);
+						player.setIsWallCollide(true);
+						break;
+				}
+			}
+
+			player.setIsWallCollide(false);
+		}
+
+		// Si le joueur n'est sur aucune plateforme, il doit tomber
+		if (!onGround)
+		{
+			player.setIsJumping(true);
+		}
+	}
+
 	public void applyGravity(Vector2 position)
 	{
 		// Apply gravity to the player
@@ -174,7 +235,7 @@ public class Core
 
 		Rectangle playerColisionSize = new Rectangle(
 			-(11 * playerScale),
-			-(playerSize.getY() / 2 * playerScale) + ((playerSize.getY() - collBoxSize.getY()) * playerScale),
+			-(playerSize.getY() / 2 * playerScale) + ((playerSize.getY() - collBoxSize.getY()) * playerScale) - playerScale,
 			collBoxSize.getX(),
 			collBoxSize.getY()
 		);
