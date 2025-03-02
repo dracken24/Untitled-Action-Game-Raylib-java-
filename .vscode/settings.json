@@ -1,0 +1,130 @@
+{
+    "workbench.colorTheme": "Aura Dark",
+    "editor.minimap.enabled": true,
+    "terminal.integrated.shell.windows": "c:/Program Files/PowerShell/7/pwsh.exe",
+    "terminal.integrated.fontWeight": "1",
+    "editor.fontFamily": "'Fira Code', 'Consolas', 'Courier New', monospace",
+    "editor.fontSize": 18,
+    "editor.tabSize": 4,
+    "editor.fontWeight": "1",
+    "workbench.editor.showTabs": "multiple",
+    "workbench.colorCustomizations":
+    {
+      "editorCursor.foreground": "#d748b8",
+      "editor.lineHighlightBackground": "#8a43945f",
+      "editor.lineHighlightBorder": "#00e1ff5f"
+    },
+    "workbench.statusBar.visible": true,
+    "editor.lineNumbers": "on",
+    "editor.cursorStyle": "line",
+    "window.zoomLevel": 0,
+    "editor.tabCompletion": "on",
+    "todohighlight.isEnable": true,
+    "todohighlight.keywords": [
+      {
+        "text": "TODO:",
+        "color": "#ff0000",
+        "backgroundColor": "rgba(0,0,0,0)"
+      },
+      {
+        "text": "HACK:",
+        "color": "#ff6600",
+        "backgroundColor": "rgba(0,0,0,0)"
+      },
+      {
+        "text": "NOTE:",
+        "color": "#b348d7",
+        "backgroundColor": "rgba(0,0,0,0)"
+      },
+      {
+        "text": "WARNING:",
+        "color": "yellow",
+        "backgroundColor": "rgba(0,0,0,0)"
+      },
+      {
+        "text": "KEEP:",
+        "color": "#12b6a5",
+        "backgroundColor": "rgba(0,0,0,0)"
+      }
+    ],
+    "todohighlight.defaultStyle":
+    {
+      "color": "red",
+      "backgroundColor": "#ffab00",
+      "overviewRulerColor": "rgba(0,0,0,0)",
+      "isWholeLine": false
+    },
+    "psi-header.config":
+    {
+          "forceToTop": true,
+          "blankLinesAfter": 1,
+          "spacesBetweenYears": false,
+          "license": "Open",
+          "author": "Dracken24",
+          "initials": "NaD",
+          "authorEmail": "dracken24@gmail.com",
+          "creationDateZero": "asIs",
+          "hostname": "dracken24",
+      },
+      "psi-header.changes-tracking":
+      {
+          "isActive": true,
+          "modAuthor": "Modified By:",
+          "modDate": "Last Modified:",
+          "modDateFormat": "dd/MM/yyyy hh:nn:ss",
+          "include": [],
+          "includeGlob": [],
+          "exclude": ["markdown", "json", "jsonc", "shellscript"],
+          "excludeGlob": ["./**/*/ignoreme.*"],
+          "autoHeader": "autoSave",
+          // "enforceHeader": true,
+          "replace": [
+              "Filename:",
+              "Project"
+          ],
+          "updateLicenseVariables": false
+      },
+      "psi-header.lang-config": [
+          {
+              "language": "*",
+              "begin": "/*",
+              "end": "*/",
+              "prefix": "/* ",
+              "suffix": "*/",
+              "lineLength": 85,
+              "lineEnding": "lf"
+          }
+      ],
+      "psi-header.variables": [
+          ["author", "Dracken24"],
+          ["createdate", "<<dateformat('DD-Mo-yyyy')>>"],
+          ["moddate", "<<dateformat('DD-Mo-yyyy')>>"],
+          ["modauthor", "<<author>>"]
+      ],
+      "psi-header.templates": [
+          {
+              "language": "*",
+              "template": [
+                  "===============================================================================",
+                  "---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---",
+                  "              -------------------------------------------------",
+                  "               PROJET: Java Dev          PAR: <<author>>",
+                  "              -------------------------------------------------",
+                  "               CREATED: <<createdate>>",
+                  "               MODIFIED BY: <<author>>",
+                  "               LAST MODIFIED: <<moddate>>",
+                  "              -------------------------------------------------",
+                  "               FILE: <<filename>>",
+                  "              -------------------------------------------------",
+                  "---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---",
+                  "===============================================================================",
+                  ""
+              ]
+          }
+      ],
+    "java.project.sourcePaths": ["src"],
+    "java.project.outputPath": "bin",
+    "java.project.referencedLibraries": [
+        "jaylib-ffm-5.5.0-2.jar"
+    ]
+}
