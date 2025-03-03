@@ -26,13 +26,15 @@ import static com.raylib.Raylib.isKeyPressed;
 
 import com.raylib.Rectangle;
 
-public class Player
+import com.interfaces.IMovable;
+
+public class Player implements IMovable
 {
 /***********************************************************************************/
 /***                                 VARIABLES                                     */
 /***********************************************************************************/
 
-	Movement	movement;
+	PlayerMovement	movement;
 	Vector2		position;
 	Vector2		size;
 	Rectangle	colisionBox;
@@ -41,13 +43,15 @@ public class Player
 
 	Vector2		initialPosition;
 	Rectangle	initialColisionBox;
+
+	private float bounceForce;
 /***********************************************************************************/
 /***                                 CONSTRUCTOR                                   */
 /***********************************************************************************/
 
 	public Player(Vector2 position, Vector2 size, Rectangle colisionBox, int scale, Vector2 offset)
 	{
-		movement = new Movement();
+		movement = new PlayerMovement();
 		this.position = position;
 		this.size = size;
 		this.scale = scale;
@@ -55,6 +59,7 @@ public class Player
 		this.offset = offset;
 		initialPosition = new Vector2(position.getX(), position.getY());
 		initialColisionBox = new Rectangle(colisionBox.getX(), colisionBox.getY(), colisionBox.getWidth(), colisionBox.getHeight());
+		bounceForce = 0.0f;
 	}
 
 /***********************************************************************************/
@@ -153,6 +158,11 @@ public class Player
 		return movement.getActionInProgress();
 	}
 
+	public float getBounceForce()
+	{
+		return bounceForce;
+	}
+
 /***********************************************************************************/
 /***                                 SETTERS                                       */
 /***********************************************************************************/
@@ -195,5 +205,10 @@ public class Player
 	public void setIsWallCollide(boolean isWallCollide)
 	{
 		movement.setIsWallCollide(isWallCollide);
+	}
+
+	public void setBounceForce(float bounceForce)
+	{
+		this.bounceForce = bounceForce;
 	}
 }

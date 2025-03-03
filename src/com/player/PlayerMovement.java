@@ -28,7 +28,7 @@ import com.raylib.Rectangle;
 import com.objects.SpriteSheet;
 import com.enums.SpriteMovement;
 
-public class Movement
+public class PlayerMovement
 {
 /***********************************************************************************/
 /***                                 VARIABLES                                     */
@@ -57,7 +57,10 @@ public class Movement
     int attackCounter;
 
     Vector2 velocity;
+    Vector2 velocityMinMax_Y;
+    Vector2 velocityMinMax_X;
     Vector2 lastPlayerPosition;
+    float fallSpeedMax;
 
     boolean isJumping;
     boolean isWallCollide;
@@ -66,7 +69,7 @@ public class Movement
 /***                                 CONSTRUCTOR                                   */
 /***********************************************************************************/
 
-    public Movement()
+    public PlayerMovement()
     {
         actionInProgress = SpriteMovement.IDLE;
 		rightSide = false;
@@ -75,7 +78,10 @@ public class Movement
         actionCounter = 0;
         attackCounter = 0;
         velocity = new Vector2(0, 0);
+        velocityMinMax_Y = new Vector2(0, 12);
+        velocityMinMax_X = new Vector2(0, 4);
         lastPlayerPosition = new Vector2(0, 0);
+        fallSpeedMax = 12;
         isJumping = false;
         isWallCollide = false;
     }
@@ -97,9 +103,9 @@ public class Movement
 		currentAction.updateSprite(false, rightSide, playerPosition, offset);
         
         adjustVelocity();
-        System.out.println("velocity: " + velocity.getY());
-        System.out.println("isJumping: " + isJumping);
-        System.out.println("actionCounter: " + actionCounter);
+        // System.out.println("velocity: " + velocity.getY());
+        // System.out.println("PlayerMo vement isJumping: " + isJumping);
+        // System.out.println("actionCounter: " + actionCounter);
 
         if (velocity.getY() >= 8 && attackCounter  == 0)
         {
@@ -118,9 +124,9 @@ public class Movement
             velocity.setY(velocity.getY() + 0.5f);
             
             // Limite la vitesse de chute maximale
-            if (velocity.getY() > 10)
+            if (velocity.getY() > fallSpeedMax)
             {
-                velocity.setY(10);
+                velocity.setY(fallSpeedMax);
             }
 
             velocity.setY(velocity.getY() + 0.0001f);
@@ -135,6 +141,13 @@ public class Movement
     {
         position.setX(position.getX() + velocity.getX());
         colisionBox.setX(colisionBox.getX() + velocity.getX());
+
+        // Slow down gradually the player when he is in the air
+        if (isJumping)
+        {
+            velocity.setX(velocity.getX() * 0.99f);
+        }
+
         return position;
     }
 
@@ -151,7 +164,7 @@ public class Movement
 		{
 			rightSide = false;
             isKeyDown = true;
-            velocity.setX(4);
+            velocity.setX(velocityMinMax_X.getY());
             if (actionCounter == 0 && isJumping == false )
             {
                 if (attackCounter == 0)
@@ -168,7 +181,7 @@ public class Movement
 		{
 			rightSide = true;
             isKeyDown = true;
-            velocity.setX(-4);
+            velocity.setX(-velocityMinMax_X.getY());
             if (actionCounter == 0 && isJumping == false)
             {
                 if (attackCounter == 0)

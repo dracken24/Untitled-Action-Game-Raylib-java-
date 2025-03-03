@@ -41,10 +41,13 @@ import static com.raylib.Raylib.beginMode2D;
 import static com.raylib.Raylib.endMode2D;
 import static com.raylib.Raylib.endTextureMode;
 import static com.raylib.Raylib.WHITE;
+import static com.raylib.Raylib.BLUE;
 
 import com.enums.SpriteMovement;
 import com.objects.Platform;
+import com.objects.MovableObject;
 import com.raylib.Camera2D;
+import com.interfaces.IMovable;
 
 public class Core
 {
@@ -52,13 +55,15 @@ public class Core
 /***                                 VARIABLES                                     */
 /***********************************************************************************/
 
-	Player		player;
 	Vector2		WindowSize;
 	String		title;
+
+	Player		player;
 
 	PhysicCore	physicCore;
 
 	Platform[]	platformTest;
+	MovableObject[] movableObjectTest;
 
 	Cameras	cameras;
 
@@ -84,6 +89,11 @@ public class Core
 		platformTest[2] = new Platform(WindowSize.getX() / 2 + 180, WindowSize.getY() / 2 + 360, 300, 40);
 		platformTest[3] = new Platform(WindowSize.getX() / 2 - 600, WindowSize.getY() / 2 + 520, 1200, 60);
 
+		// Initialize the movable object
+		movableObjectTest = new MovableObject[1];
+		movableObjectTest[0] = new MovableObject(new Vector2(WindowSize.getX() / 2 - 12 + 100, WindowSize.getY() / 2 + 12 - 200), new Vector2(24, 24), new Rectangle(0, 0, 24, 24), 1, new Vector2(12, 12), BLUE);
+		movableObjectTest[0].setBounceForce(0.7f);
+		
 		physicCore = new PhysicCore();
 
 		cameras = new Cameras();
@@ -101,14 +111,10 @@ public class Core
 	public void update()
 	{
 		// For adjust the camera to follow the player
-		Camera2D mainCam = cameras.getMainCamera();
-		mainCam.setTarget(player.getPosition());
-		cameras.setMainCamera(mainCam);
-		// System.out.println("player colisionBox: " + player.getColisionBoxPlusOffset().getX() + ", " + player.getColisionBoxPlusOffset ().getY() + ", " + player.getColisionBox().getWidth() + ", " + player.getColisionBox().getHeight());
-		// System.out.println("platformTest: " + platformTest.getPlatform().getX() + ", " + platformTest.getPlatform().getY() + ", " + platformTest.getPlatform().getWidth() + ", " + platformTest.getPlatform().getHeight());
+		followCamera(player.getPosition());
 
 		// Check collisions between the player and the platforms
-		checkCollisions();
+		checkObjectCollisions(player, platformTest);
 
 		beginDrawing();
 			beginTextureMode(cameras.getMainTexture());
@@ -126,24 +132,33 @@ public class Core
 					{
 						platformTest[i].drawPlatform();
 					}
+
+					// Draw the movable object
+					for (int i = 0; i < movableObjectTest.length; i++)
+					{
+						
+						checkObjectCollisions(movableObjectTest[i], platformTest);
+						applyGravity(movableObjectTest[i]);
+						movableObjectTest[i].update();
+					}
 					
 					// Update the player
 					player.update();
 
 					// Apply gravity to the player
-					applyGravity(player.getPosition());
+					applyGravity(player);
 
 				endMode2D();
 			endTextureMode();
 
-			// Dessiner la texture finale
+			// draw the final texture
 			drawTextureRec(
 				cameras.getMainTexture().getTexture(),
 				new Rectangle(
-					0,                                                     // x
-					0,                                                     // y
+					0,                                                    // x
+					0,                                                    // y
 					cameras.getMainTexture().getTexture().getWidth(),     // width
-					-cameras.getMainTexture().getTexture().getHeight()    // height (négatif pour inverser)
+					-cameras.getMainTexture().getTexture().getHeight()    // height (negative to invert)
 				),
 				new Vector2(0, 0),
 				WHITE
@@ -151,87 +166,170 @@ public class Core
 		endDrawing();
 	}
 
-	void checkCollisions()
+	void followCamera(Vector2 targetPosition)
+	{
+		Camera2D mainCam = cameras.getMainCamera();
+		mainCam.setTarget(targetPosition);
+	}
+
+	// /*
+	//  * Check collisions between an object and an array of objects
+	//  * @param arrayToCheck: The array of platforms to check
+	//  * @param objectToCheck: The object to check
+	//  */
+	<T> void checkObjectCollisions(IMovable objectToCheck, T[] arrayToCheck)
 	{
 		boolean onGround = false;
-		for (int i = 0; i < platformTest.length; i++)
+		for (int i = 0; i < arrayToCheck.length; i++)
 		{
-			String collisionSide = physicCore.getGravity().checkGroundCollision(
-				player.getColisionBoxPlusOffset(), 
-				platformTest[i].getPlatform()
+			Rectangle objectCollisionBox;
+			if (objectToCheck instanceof Player)
+			{
+				objectCollisionBox = ((Player)objectToCheck).getColisionBoxPlusOffset();
+			}
+			else
+			{
+				objectCollisionBox = objectToCheck.getColisionBox();
+			}
+
+			Rectangle platformRect = arrayToCheck[i] instanceof Platform ? 
+				((Platform)arrayToCheck[i]).getPlatform() : null;
+
+			String collisionSide = physicCore.getGravity().checkCollision(
+				objectCollisionBox,
+				platformRect
 			);
 			
 			if (collisionSide != "NONE")
 			{
 				switch(collisionSide)
 				{
-					case "BOTTOM": // The player lands on the platform
-						if (player.getActionInProgress() == SpriteMovement.FALL || 
-							player.getActionInProgress() == SpriteMovement.JUMP)
+					case "BOTTOM":
+						if (objectToCheck instanceof Player)
 						{
-							player.setActionCounter(0);
+							Player player = (Player)objectToCheck;
+							if (player.getActionInProgress() == SpriteMovement.FALL || 
+								player.getActionInProgress() == SpriteMovement.JUMP)
+							{
+								player.setActionCounter(0);
+							}
+							player.getVelocity().setY(0);
+							player.setIsJumping(false);
+							onGround = true;
 						}
-						player.getVelocity().setY(0);
-						player.setIsJumping(false);
-						onGround = true;
-						
-						// Adjust the position of the player and his collision box
-						Rectangle playerBox = player.getColisionBoxPlusOffset();
-						Rectangle platform = platformTest[i].getPlatform();
-						float adjustment = playerBox.getY() + playerBox.getHeight() - platform.getY();
-						
-						// Adjust the position of the player
-						player.setPosition(new Vector2(
-							player.getPosition().getX(),
-							player.getPosition().getY() - adjustment
-						));
-						
-						// Adjust the position of the collision box
-						Rectangle colBox = player.getColisionBox();
-						colBox.setY(colBox.getY() - adjustment);
-						player.setColisionBox(colBox);
+						else if (objectToCheck instanceof MovableObject)
+						{
+							MovableObject obj = (MovableObject)objectToCheck;
+							float currentVelocityY = obj.getVelocity().getY();
+							
+							// Si la vitesse est très faible, arrêter complètement
+							if (Math.abs(currentVelocityY) < 2.0f)
+							{
+								obj.getVelocity().setY(0);
+								obj.setIsJumping(false);
+								onGround = true;
+							}
+							else
+							{
+								// Sinon, appliquer le rebond
+								float newVelocityY = -currentVelocityY * obj.getBounceForce();
+								obj.getVelocity().setY(newVelocityY);
+								obj.setIsJumping(true);
+							}
+						}
 						break;
 
-					case "TOP": // The player hits the bottom of the platform
-						player.getVelocity().setY(1);
+					case "TOP":
+						if (objectToCheck instanceof MovableObject)
+						{
+							MovableObject obj = (MovableObject)objectToCheck;
+							obj.getVelocity().setY(-obj.getVelocity().getY() * obj.getBounceForce());
+						}
 						break;
 
-					case "LEFT": // The player hits the right side of the platform
-					case "RIGHT": // The player hits the left side of the platform
-						player.getVelocity().setX(0);
-						player.setIsWallCollide(true);
+					case "LEFT":
+					case "RIGHT":
+						if (objectToCheck instanceof MovableObject)
+						{
+							MovableObject obj = (MovableObject)objectToCheck;
+							// Rebond horizontal
+							obj.getVelocity().setX(-obj.getVelocity().getX() * obj.getBounceForce());
+						}
+						objectToCheck.setIsWallCollide(true);
 						break;
 				}
 			}
+			else if (objectToCheck instanceof MovableObject)
+			{
+				MovableObject obj = (MovableObject)objectToCheck;
 
-			player.setIsWallCollide(false);
+				// System.out.println("*****************");
+				// System.out.println("*****************");
+				// System.out.println("isJumping: " + obj.getIsJumping());
+				// System.out.println("isAtRest: " + obj.getIsAtRest());
+				// System.out.println("*****************");
+
+				obj.setIsJumping(true);
+				obj.setIsWallCollide(false);
+				obj.setIsAtRest(false);
+				return;
+			}
 		}
 
-		// Si le joueur n'est sur aucune plateforme, il doit tomber
 		if (!onGround)
 		{
-			player.setIsJumping(true);
+			objectToCheck.setIsJumping(true);
+			if (objectToCheck instanceof Player)
+			{
+				Player player = (Player)objectToCheck;
+				if (player.getVelocity().getY() > 0)
+				{
+					player.setMovement(SpriteMovement.FALL);
+				}
+			}
 		}
 	}
 
-	public void applyGravity(Vector2 position)
+	void applyGravity(IMovable object)
 	{
-		// Apply gravity to the player
-		player.setPosition(physicCore.getGravity().applyGravity(player.getPosition(), player.getVelocity(), player.getIsJumping()));
+		if (object instanceof MovableObject)
+		{
+			MovableObject obj = (MovableObject)object;
+			// System.out.println("Velocity Y: " + obj.getVelocity().getY());
+			// System.out.println("Is At Rest: " + obj.getIsAtRest());
+			// System.out.println("Is Jumping: " + obj.getIsJumping());
+			if (obj.getIsAtRest() || obj.getIsJumping() == false || obj.getVelocity().getY() == 0)
+			{
+				return;
+			}
+		}
+		// Apply gravity to the object
+		object.setPosition(physicCore.getGravity().applyGravity(
+			object.getPosition(),
+			object.getVelocity(),
+			object.getIsJumping()
+		));
 
-		// Apply gravity to the colision box
-		Rectangle colisionBox = player.getColisionBox();
-		Vector2 colisionBoxPosition = physicCore.getGravity().applyGravity(new Vector2(colisionBox.getX(), colisionBox.getY()), player.getVelocity(), player.getIsJumping());
+		// Apply gravity to the collision box
+		Rectangle colisionBox = object.getColisionBox();
+		Vector2 colisionBoxPosition = physicCore.getGravity().applyGravity(
+			new Vector2(colisionBox.getX(), colisionBox.getY()),
+			object.getVelocity(),
+			object.getIsJumping()
+		);
+		
 		colisionBox.setX(colisionBoxPosition.getX());
 		colisionBox.setY(colisionBoxPosition.getY());
+		object.setColisionBox(colisionBox);
 	}
 
+	// TODO: Adjust this function with player choice lather
 	void initPlayer()
 	{
 		Vector2 playerPos = new Vector2(0, 0);
 		Vector2 playerSize = new Vector2(70, 70);
 		Vector2 collBoxSize = new Vector2(22, 55);
-;		int playerScale = 2;
+		int playerScale = 2;
 
 		Rectangle playerColisionSize = new Rectangle(
 			-(11 * playerScale),
@@ -244,5 +342,6 @@ public class Core
 
 		player = new Player(playerPos, playerSize, playerColisionSize, playerScale, playerOffset);
 		new InitPlayer(PlayerType.ICHIGO, player, playerPos, playerSize);
+		player.setBounceForce(0.0f);
 	}
 }

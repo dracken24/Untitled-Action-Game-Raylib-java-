@@ -10,12 +10,14 @@ JAVA_FILES = src/App.java \
             src/com/objects/SpriteSheet.java \
             src/com/player/Player.java \
             src/com/player/InitPlayer.java \
-            src/com/player/Movement.java \
+            src/com/player/PlayerMovement.java \
             src/com/enums/PlayerType.java \
             src/com/enums/SpriteMovement.java \
             src/com/physic/PhysicCore.java \
             src/com/physic/Gravity.java \
-            src/com/game/Cameras.java
+            src/com/game/Cameras.java \
+            src/com/objects/MovableObject.java \
+            src/com/interfaces/IMovable.java
 
 all: compile
 

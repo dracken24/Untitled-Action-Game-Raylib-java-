@@ -52,7 +52,7 @@ public class Gravity
         return position;
     }
 
-    public String checkGroundCollision(Rectangle colisionBox, Rectangle platform)
+    public String checkCollision(Rectangle colisionBox, Rectangle platform)
     {
         // Get the edges of the player
         float playerLeft = colisionBox.getX();
@@ -80,10 +80,22 @@ public class Gravity
                                       Math.min(overlapTop, overlapBottom));
 
             // Return the side with the smallest penetration
-            if (minOverlap == overlapTop) return "BOTTOM"; // Le bas du joueur touche le haut de la plateforme
-            if (minOverlap == overlapBottom) return "TOP"; // Le haut du joueur touche le bas de la plateforme
-            if (minOverlap == overlapLeft) return "RIGHT"; // La droite du joueur touche la gauche de la plateforme
-            if (minOverlap == overlapRight) return "LEFT"; // La gauche du joueur touche la droite de la plateforme
+            if (minOverlap == overlapTop)
+            {
+                return "BOTTOM"; // The bottom of the player touches the top of the platform
+            }
+            if (minOverlap == overlapBottom)
+            {
+                return "TOP"; // The top of the player touches the bottom of the platform
+            }
+            if (minOverlap == overlapLeft)
+            {
+                return "RIGHT"; // The right side of the player touches the left side of the platform
+            }
+            if (minOverlap == overlapRight)
+            {
+                return "LEFT"; // The left side of the player touches the right side of the platform
+            }
         }
         
         return "NONE"; // No collision

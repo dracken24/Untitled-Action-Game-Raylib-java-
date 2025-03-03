@@ -43,13 +43,15 @@ public class InitPlayer
 
     private void initIchigo(Player player, Vector2 playerSize, Vector2 playerPos)
     {
+		int scale = 2;
+
 		// Idle
         player.movement.setIdle(new SpriteSheet(
 			"assets/Players/ichigo/ichigo_idle/ichigo_All_idle_01.png",
 			4,
 			playerSize,
 			18,
-			2,
+			scale,
 			playerPos
 		));
 
@@ -59,7 +61,7 @@ public class InitPlayer
 			8,
 			playerSize,
 			5,
-			2,
+			scale,
 			playerPos
 		));
 
@@ -70,7 +72,7 @@ public class InitPlayer
 			4,
 			playerSize,
 			18,
-			2,
+			scale,
 			playerPos
 		));
 
