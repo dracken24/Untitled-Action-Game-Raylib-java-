@@ -202,6 +202,10 @@ public class Core
 			
 			if (!collisionSide.equals("NONE"))
 			{
+				if (objectToCheck instanceof MovableObject)
+				{
+					System.out.println("COLLISION MOVABLE: " + collisionSide);
+				}
 				// Ajuster la position selon le côté de collision
 				float adjustment = 0;
 				switch(collisionSide)
@@ -280,13 +284,9 @@ public class Core
 							MovableObject obj = (MovableObject)objectToCheck;
 							obj.getVelocity().setX(-obj.getVelocity().getX() * obj.getBounceForce());
 						}
-						else if (objectToCheck instanceof Player)
-						{
-							// Réinitialiser la vélocité X pour le joueur lors d'une collision latérale
-							Player player = (Player)objectToCheck;
-							// player.getVelocity().setX(0);
-						}
-						// objectToCheck.setIsWallCollide(true);
+
+						objectToCheck.setIsWallCollide(true);
+						
 						break;
 				}
 
@@ -304,10 +304,11 @@ public class Core
 			{
 				MovableObject obj = (MovableObject)objectToCheck;
 
-				// System.out.println("*****************");
-				// System.out.println("isJumping: " + obj.getIsJumping());
-				// System.out.println("isAtRest: " + obj.getIsAtRest());
-				// System.out.println("*****************");
+				System.out.println("*****************");
+				System.out.println("isJumping: " + obj.getIsJumping());
+				System.out.println("isAtRest: " + obj.getIsAtRest());
+				System.out.println("velocity: " + obj.getVelocity().getY());
+				System.out.println("*****************");
 
 				obj.setIsJumping(true);
 				obj.setIsWallCollide(false);
