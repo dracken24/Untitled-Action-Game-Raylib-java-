@@ -15,7 +15,7 @@
 package com.physic;
 
 import com.physic.Gravity;
-
+import com.physic.Collision;
 public class PhysicCore
 {
 /***********************************************************************************/
@@ -23,7 +23,7 @@ public class PhysicCore
 /***********************************************************************************/
 
 	public Gravity	gravity;
-
+	public Collision collision;
 /***********************************************************************************/
 /***                                 CONSTRUCTOR                                   */
 /***********************************************************************************/
@@ -31,6 +31,7 @@ public class PhysicCore
 	public PhysicCore()
 	{
 		gravity = new Gravity();
+		collision = new Collision();
 	}
 	
 /***********************************************************************************/
@@ -43,10 +44,10 @@ public class PhysicCore
 /***                                 GETTERS                                       */
 /***********************************************************************************/
 
-	public Gravity getGravity()
-	{
-		return gravity;
-	}
+	// public Gravity getGravity()
+	// {
+	// 	return gravity;
+	// }
 
 /***********************************************************************************/
 /***                                 SETTERS                                       */

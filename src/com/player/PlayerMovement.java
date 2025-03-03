@@ -104,7 +104,7 @@ public class PlayerMovement
         
         adjustVelocity();
         // System.out.println("velocity: " + velocity.getY());
-        // System.out.println("PlayerMo vement isJumping: " + isJumping);
+        // System.out.println("PlayerMovement isJumping: " + isJumping);
         // System.out.println("actionCounter: " + actionCounter);
 
         if (velocity.getY() >= 8 && attackCounter  == 0)
@@ -172,10 +172,10 @@ public class PlayerMovement
                     this.actionInProgress = SpriteMovement.RUN;
                 }
             }
-            else if (isWallCollide == true)
-            {
-                velocity.setX(0);
-            }
+            // else if (isWallCollide == true)
+            // {
+            //     velocity.setX(0);
+            // }
 		}
 		if (isKeyDown(KEY_A))
 		{
@@ -189,10 +189,10 @@ public class PlayerMovement
                     this.actionInProgress = SpriteMovement.RUN;
                 }
             }
-            else if (isWallCollide == true)
-            {
-                velocity.setX(0);
-            }
+            // else if (isWallCollide == true)
+            // {
+            //     velocity.setX(0);
+            // }
 		}
         if (isKeyPressed(KEY_SPACE))
 		{

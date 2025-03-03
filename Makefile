@@ -17,7 +17,8 @@ JAVA_FILES = src/App.java \
             src/com/physic/Gravity.java \
             src/com/game/Cameras.java \
             src/com/objects/MovableObject.java \
-            src/com/interfaces/IMovable.java
+            src/com/interfaces/IMovable.java \
+            src/com/physic/Collision.java
 
 all: compile
 

@@ -40,6 +40,7 @@ public class Player implements IMovable
 	Rectangle	colisionBox;
 	int			scale;
 	Vector2		offset;
+	Vector2		collisionBoxOffset;
 
 	Vector2		initialPosition;
 	Rectangle	initialColisionBox;
@@ -60,6 +61,7 @@ public class Player implements IMovable
 		initialPosition = new Vector2(position.getX(), position.getY());
 		initialColisionBox = new Rectangle(colisionBox.getX(), colisionBox.getY(), colisionBox.getWidth(), colisionBox.getHeight());
 		bounceForce = 0.0f;
+		collisionBoxOffset = new Vector2(colisionBox.getX(), colisionBox.getY());
 	}
 
 /***********************************************************************************/
@@ -161,6 +163,11 @@ public class Player implements IMovable
 	public float getBounceForce()
 	{
 		return bounceForce;
+	}
+
+	public Vector2 getCollisionBoxOffset()
+	{
+		return collisionBoxOffset;
 	}
 
 /***********************************************************************************/

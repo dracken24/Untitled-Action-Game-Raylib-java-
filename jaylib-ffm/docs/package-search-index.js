@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"m":"io.github.electronstudio.jaylib.ffm","l":"com.raylib"},{"m":"io.github.electronstudio.jaylib.ffm","l":"com.raylib.jextract"}];updateSearchResults();
