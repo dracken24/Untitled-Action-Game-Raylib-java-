@@ -77,7 +77,7 @@ public class Gravity
 
             // Get the smallest penetration
             float minOverlap = Math.min(Math.min(overlapLeft, overlapRight), 
-                                      Math.min(overlapTop, overlapBottom));
+                                      Math.min(overlapTop, overlapBottom)); 
 
             // Return the side with the smallest penetration
             if (minOverlap == overlapTop)
