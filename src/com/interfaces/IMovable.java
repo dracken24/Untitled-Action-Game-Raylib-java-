@@ -27,4 +27,5 @@ public interface IMovable
     void setIsJumping(boolean isJumping);
     void setIsWallCollide(boolean isWallCollide);
     boolean getIsJumping();
+    boolean getIsAtRest();
 }

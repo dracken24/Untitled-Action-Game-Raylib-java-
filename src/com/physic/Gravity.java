@@ -20,6 +20,9 @@ import static com.raylib.Raylib.checkCollisionBoxes;
 import static com.raylib.Raylib.checkCollisionRecs;
 
 import com.raylib.Rectangle;
+
+import com.interfaces.IMovable;
+
 public class Gravity
 {
 /***********************************************************************************/
@@ -39,7 +42,36 @@ public class Gravity
 /***                                 FUNCTIONS                                     */
 /***********************************************************************************/
 
-    public Vector2 applyGravity(Vector2 position, Vector2 velocity, boolean isJumping)
+    public void applyGravity(IMovable object)
+	{
+        if (object.getIsAtRest() || object.getIsJumping() == false
+            || object.getVelocity().getY() == 0)
+        {
+            return;
+        }
+
+		// Appliquer uniquement la gravité (mouvement vertical)
+		Vector2 newPosition = useGravity(
+			object.getPosition(),
+			object.getVelocity(),
+			object.getIsJumping()
+		);
+		object.setPosition(newPosition);
+
+		// Mettre à jour la boîte de collision
+		Rectangle colisionBox = object.getColisionBox();
+		Vector2 colisionBoxPosition = useGravity(
+			new Vector2(colisionBox.getX(), colisionBox.getY()),
+			object.getVelocity(),
+			object.getIsJumping()
+		);
+		
+		colisionBox.setX(colisionBoxPosition.getX());
+		colisionBox.setY(colisionBoxPosition.getY());
+		object.setColisionBox(colisionBox);
+	}
+
+    public Vector2 useGravity(Vector2 position, Vector2 velocity, boolean isJumping)
     {
         if (isJumping)
         {

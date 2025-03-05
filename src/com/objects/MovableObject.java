@@ -18,6 +18,7 @@ import com.raylib.Vector2;
 import com.raylib.Rectangle;
 import com.raylib.Color;
 
+import static com.raylib.Raylib.DARKPURPLE;
 import static com.raylib.Raylib.drawRectangleRec;
 import static com.raylib.Raylib.drawRectangleV;
 
@@ -85,8 +86,13 @@ public class MovableObject implements IMovable
         // System.out.println("MovableObject isJumping: " + isJumping);
         // System.out.println("MovableObject velocity: " + velocity.getY());
         adjustVelocity();
-        // draw();
-		drawCollisionBox();
+		if (position != new Vector2(this.colisionBox.getX(), this.colisionBox.getY()))
+		{
+			this.colisionBox.setX(this.position.getX());
+			this.colisionBox.setY(this.position.getY());
+		}
+		// drawCollisionBox();
+        draw();
 
         lastPosition = position;
         lastVelocity = velocity;
@@ -99,7 +105,7 @@ public class MovableObject implements IMovable
 
 	public void drawCollisionBox()
 	{
-		drawRectangleRec(this.colisionBox, color);
+		drawRectangleRec(this.colisionBox, DARKPURPLE);
 	}
 
     void adjustVelocity()

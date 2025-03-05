@@ -155,6 +155,11 @@ public class Player implements IMovable
 		return movement.getIsJumping();
 	}
 
+	public boolean getIsAtRest()
+	{
+		return movement.getIsAtRest();
+	}
+
 	public SpriteMovement getActionInProgress()
 	{
 		return movement.getActionInProgress();

@@ -138,7 +138,7 @@ public class Core
 					{
 						
 						checkObjectCollisions(movableObjectTest[i], platformTest);
-						applyGravity(movableObjectTest[i]);
+						physicCore.gravity.applyGravity(movableObjectTest[i]);
 						movableObjectTest[i].update();
 					}
 					
@@ -146,7 +146,7 @@ public class Core
 					player.update();
 
 					// Apply gravity to the player
-					applyGravity(player);
+					physicCore.gravity.applyGravity(player);
 
 				endMode2D();
 			endTextureMode();
@@ -350,37 +350,37 @@ public class Core
 		}
 	}
 
-	void applyGravity(IMovable object)
-	{
-		if (object instanceof MovableObject)
-		{
-			MovableObject obj = (MovableObject)object;
-			if (obj.getIsAtRest() || obj.getIsJumping() == false || obj.getVelocity().getY() == 0)
-			{
-				return;
-			}
-		}
+	// void applyGravity(IMovable object)
+	// {
+	// 	if (object instanceof MovableObject)
+	// 	{
+	// 		MovableObject obj = (MovableObject)object;
+	// 		if (obj.getIsAtRest() || obj.getIsJumping() == false || obj.getVelocity().getY() == 0)
+	// 		{
+	// 			return;
+	// 		}
+	// 	}
 
-		// Appliquer uniquement la gravité (mouvement vertical)
-		Vector2 newPosition = physicCore.gravity.applyGravity(
-			object.getPosition(),
-			object.getVelocity(),
-			object.getIsJumping()
-		);
-		object.setPosition(newPosition);
+	// 	// Appliquer uniquement la gravité (mouvement vertical)
+	// 	Vector2 newPosition = physicCore.gravity.applyGravity(
+	// 		object.getPosition(),
+	// 		object.getVelocity(),
+	// 		object.getIsJumping()
+	// 	);
+	// 	object.setPosition(newPosition);
 
-		// Mettre à jour la boîte de collision
-		Rectangle colisionBox = object.getColisionBox();
-		Vector2 colisionBoxPosition = physicCore.gravity.applyGravity(
-			new Vector2(colisionBox.getX(), colisionBox.getY()),
-			object.getVelocity(),
-			object.getIsJumping()
-		);
+	// 	// Mettre à jour la boîte de collision
+	// 	Rectangle colisionBox = object.getColisionBox();
+	// 	Vector2 colisionBoxPosition = physicCore.gravity.applyGravity(
+	// 		new Vector2(colisionBox.getX(), colisionBox.getY()),
+	// 		object.getVelocity(),
+	// 		object.getIsJumping()
+	// 	);
 		
-		colisionBox.setX(colisionBoxPosition.getX());
-		colisionBox.setY(colisionBoxPosition.getY());
-		object.setColisionBox(colisionBox);
-	}
+	// 	colisionBox.setX(colisionBoxPosition.getX());
+	// 	colisionBox.setY(colisionBoxPosition.getY());
+	// 	object.setColisionBox(colisionBox);
+	// }
 
 	// TODO: Adjust this function with player choice lather
 	void initPlayer()

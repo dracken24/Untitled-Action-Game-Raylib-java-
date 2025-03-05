@@ -63,6 +63,7 @@ public class PlayerMovement
     float fallSpeedMax;
 
     boolean isJumping;
+    boolean isAtRest;
     boolean isWallCollide;
 
 /***********************************************************************************/
@@ -118,7 +119,7 @@ public class PlayerMovement
 
     void adjustVelocity()
     {
-        if (isJumping)
+        if (isJumping || isAtRest)
         {
             // add gravity
             velocity.setY(velocity.getY() + 0.5f);
@@ -304,6 +305,11 @@ public class PlayerMovement
         return isJumping;
     }
 
+    public boolean getIsAtRest()
+    {
+        return isAtRest;
+    }
+
     public int getActionCounter()
     {
         return actionCounter;
@@ -392,6 +398,11 @@ public class PlayerMovement
     public void setIsJumping(boolean isJumping)
     {
         this.isJumping = isJumping;
+    }
+
+    public void setIsAtRest(boolean isAtRest)
+    {
+        this.isAtRest = isAtRest;
     }
 
     public void setActionCounter(int actionCounter)
