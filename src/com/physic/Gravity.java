@@ -16,9 +16,6 @@ package com.physic;
 
 import com.raylib.Vector2;
 
-import static com.raylib.Raylib.checkCollisionBoxes;
-import static com.raylib.Raylib.checkCollisionRecs;
-
 import com.raylib.Rectangle;
 
 import com.interfaces.IMovable;
@@ -33,6 +30,8 @@ public class Gravity
 
 /***********************************************************************************/
 /***                                 CONSTRUCTOR                                   */
+/***********************************************************************************/
+
     public Gravity()
     {
         gravity = 1;

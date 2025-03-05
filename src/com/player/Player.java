@@ -17,7 +17,6 @@ package com.player;
 import com.enums.SpriteMovement;
 import com.raylib.Vector2;
 import static com.raylib.Raylib.drawRectangleRec;
-import static com.raylib.Raylib.DARKGRAY;
 import static com.raylib.Raylib.WHITE;
 import static com.raylib.Raylib.DARKPURPLE;
 import static com.raylib.Raylib.KeyboardKey.KEY_B;

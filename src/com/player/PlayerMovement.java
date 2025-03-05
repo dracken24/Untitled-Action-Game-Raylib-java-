@@ -434,12 +434,6 @@ public class PlayerMovement
             case ATTACK01:
                 setCurrentAction(attack01);
                 break; 
-            case DEATH:
-                setCurrentAction(death);
-                break;
-            case HURT:
-                setCurrentAction(hurt);
-                break;
             case FALL:
                 setCurrentAction(fall);
                 break;
