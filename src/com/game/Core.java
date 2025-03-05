@@ -199,23 +199,16 @@ public class Core
 				objectCollisionBox,
 				platformRect
 			);
+
+			// System.out.println( "collisionSide: " + collisionSide);
 			
 			if (!collisionSide.equals("NONE"))
 			{
-				if (objectToCheck instanceof MovableObject)
-				{
-					System.out.println("COLLISION MOVABLE: " + collisionSide);
-				}
-				// Ajuster la position selon le côté de collision
 				float adjustment = 0;
 				switch(collisionSide)
 				{
 					case "BOTTOM":
 						adjustment = objectCollisionBox.getY() + objectCollisionBox.getHeight() - platformRect.getY();
-						objectToCheck.setPosition(new Vector2(
-							objectToCheck.getPosition().getX(),
-							objectToCheck.getPosition().getY() - adjustment
-						));
 						
 						if (objectToCheck instanceof Player)
 						{
@@ -236,21 +229,35 @@ public class Core
 						{
 							MovableObject obj = (MovableObject)objectToCheck;
 							float currentVelocityY = obj.getVelocity().getY();
+
+							System.out.println("currentVelocityY: " + adjustment);
 							
 							// Si la vitesse est très faible, arrêter complètement
 							if (Math.abs(currentVelocityY) < 2.0f)
 							{
+								// System.out.println("STOP");
 								obj.getVelocity().setY(0);
 								obj.setIsJumping(false);
+								obj.setIsAtRest(true);
 								onGround = true;
 							}
 							else
 							{
+								System.out.println("REBOUND");
 								// Sinon, appliquer le rebond
 								float newVelocityY = -currentVelocityY * obj.getBounceForce();
 								obj.getVelocity().setY(newVelocityY);
 								obj.setIsJumping(true);
+								obj.setIsAtRest(false);
 							}
+						}
+
+						if (Math.abs(adjustment) < 2.0f || objectToCheck instanceof Player)
+						{
+							objectToCheck.setPosition(new Vector2(
+								objectToCheck.getPosition().getX(),
+								objectToCheck.getPosition().getY() - adjustment
+							));
 						}
 						break;
 
@@ -300,21 +307,33 @@ public class Core
 					((Player)objectToCheck).getCollisionBoxOffset().getY() : 0));
 				objectToCheck.setColisionBox(colBox);
 			}
-			else if (objectToCheck instanceof MovableObject)
+			else if (objectToCheck instanceof MovableObject && !onGround)
 			{
 				MovableObject obj = (MovableObject)objectToCheck;
-
-				System.out.println("*****************");
-				System.out.println("isJumping: " + obj.getIsJumping());
-				System.out.println("isAtRest: " + obj.getIsAtRest());
-				System.out.println("velocity: " + obj.getVelocity().getY());
-				System.out.println("*****************");
 
 				obj.setIsJumping(true);
 				obj.setIsWallCollide(false);
 				obj.setIsAtRest(false);
-				return;
 			}
+			else if (objectToCheck instanceof MovableObject && onGround)
+			{
+				MovableObject obj = (MovableObject)objectToCheck;
+
+				obj.setIsJumping(false);
+				obj.setIsWallCollide(false);
+				obj.setIsAtRest(true);
+			}
+
+			// if (objectToCheck instanceof MovableObject)
+			// {
+			// 	MovableObject obj = (MovableObject)objectToCheck;
+
+			// 	System.out.println("*****************");
+			// 	System.out.println("isJumping: " + obj.getIsJumping());
+			// 	System.out.println("isAtRest: " + obj.getIsAtRest());
+			// 	System.out.println("velocity: " + obj.getVelocity().getY());
+			// 	System.out.println("*****************");
+			// }
 		}
 
 		if (!onGround)

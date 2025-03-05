@@ -120,16 +120,16 @@ public class PlayerMovement
     {
         if (isJumping)
         {
-            // Ajoute une accélération constante (gravité)
+            // add gravity
             velocity.setY(velocity.getY() + 0.5f);
             
-            // Limite la vitesse de chute maximale
+            // limit the max fall speed
             if (velocity.getY() > fallSpeedMax)
             {
                 velocity.setY(fallSpeedMax);
             }
 
-            velocity.setY(velocity.getY() + 0.0001f);
+            // velocity.setY(velocity.getY() + 0.0001f);
         }
         else
         {

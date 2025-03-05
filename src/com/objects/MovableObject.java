@@ -17,6 +17,8 @@ package com.objects;
 import com.raylib.Vector2;
 import com.raylib.Rectangle;
 import com.raylib.Color;
+
+import static com.raylib.Raylib.drawRectangleRec;
 import static com.raylib.Raylib.drawRectangleV;
 
 import com.interfaces.IMovable;
@@ -83,7 +85,8 @@ public class MovableObject implements IMovable
         // System.out.println("MovableObject isJumping: " + isJumping);
         // System.out.println("MovableObject velocity: " + velocity.getY());
         adjustVelocity();
-        draw();
+        // draw();
+		drawCollisionBox();
 
         lastPosition = position;
         lastVelocity = velocity;
@@ -92,6 +95,11 @@ public class MovableObject implements IMovable
 	public void draw()
 	{
 		drawRectangleV(position, size, color);
+	}
+
+	public void drawCollisionBox()
+	{
+		drawRectangleRec(this.colisionBox, color);
 	}
 
     void adjustVelocity()
@@ -233,6 +241,11 @@ public class MovableObject implements IMovable
 	public void setColisionBox(Rectangle colisionBox)
 	{
 		this.colisionBox = colisionBox;
+	}
+
+	public void setColisionBoxPosition(Vector2 colisionBoxPos)
+	{
+		this.position = colisionBoxPos;
 	}
 
 	public void setScale(int scale)
