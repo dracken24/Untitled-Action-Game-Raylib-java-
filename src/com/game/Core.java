@@ -23,7 +23,6 @@ import static com.raylib.Raylib.clearBackground;
 import static com.raylib.Raylib.endDrawing;
 import static com.raylib.Raylib.drawText;
 import static com.raylib.Raylib.drawTextureRec;
-import static com.raylib.Raylib.getMousePosition;
 import static com.raylib.Raylib.VIOLET;
 import static com.raylib.Raylib.LIGHTGRAY;
 
@@ -34,9 +33,6 @@ import com.enums.PlayerType;
 import com.player.Player;
 import com.player.InitPlayer;
 import com.physic.PhysicCore;
-import com.game.Cameras;
-import com.raylib.Texture;
-import com.raylib.Rectangle;
 import static com.raylib.Raylib.beginMode2D;
 import static com.raylib.Raylib.endMode2D;
 import static com.raylib.Raylib.endTextureMode;
@@ -230,7 +226,7 @@ public class Core
 							MovableObject obj = (MovableObject)objectToCheck;
 							float currentVelocityY = obj.getVelocity().getY();
 
-							System.out.println("currentVelocityY: " + adjustment);
+							// System.out.println("currentVelocityY: " + adjustment);
 							
 							// Si la vitesse est très faible, arrêter complètement
 							if (Math.abs(currentVelocityY) < 2.0f)
@@ -243,7 +239,7 @@ public class Core
 							}
 							else
 							{
-								System.out.println("REBOUND");
+								// System.out.println("REBOUND");
 								// Sinon, appliquer le rebond
 								float newVelocityY = -currentVelocityY * obj.getBounceForce();
 								obj.getVelocity().setY(newVelocityY);
@@ -339,48 +335,8 @@ public class Core
 		if (!onGround)
 		{
 			objectToCheck.setIsJumping(true);
-			if (objectToCheck instanceof Player)
-			{
-				Player player = (Player)objectToCheck;
-				if (player.getVelocity().getY() > 0)
-				{
-					player.setMovement(SpriteMovement.FALL);
-				}
-			}
 		}
 	}
-
-	// void applyGravity(IMovable object)
-	// {
-	// 	if (object instanceof MovableObject)
-	// 	{
-	// 		MovableObject obj = (MovableObject)object;
-	// 		if (obj.getIsAtRest() || obj.getIsJumping() == false || obj.getVelocity().getY() == 0)
-	// 		{
-	// 			return;
-	// 		}
-	// 	}
-
-	// 	// Appliquer uniquement la gravité (mouvement vertical)
-	// 	Vector2 newPosition = physicCore.gravity.applyGravity(
-	// 		object.getPosition(),
-	// 		object.getVelocity(),
-	// 		object.getIsJumping()
-	// 	);
-	// 	object.setPosition(newPosition);
-
-	// 	// Mettre à jour la boîte de collision
-	// 	Rectangle colisionBox = object.getColisionBox();
-	// 	Vector2 colisionBoxPosition = physicCore.gravity.applyGravity(
-	// 		new Vector2(colisionBox.getX(), colisionBox.getY()),
-	// 		object.getVelocity(),
-	// 		object.getIsJumping()
-	// 	);
-		
-	// 	colisionBox.setX(colisionBoxPosition.getX());
-	// 	colisionBox.setY(colisionBoxPosition.getY());
-	// 	object.setColisionBox(colisionBox);
-	// }
 
 	// TODO: Adjust this function with player choice lather
 	void initPlayer()

@@ -107,11 +107,16 @@ public class PlayerMovement
         // System.out.println("velocity: " + velocity.getY());
         // System.out.println("PlayerMovement isJumping: " + isJumping);
         // System.out.println("actionCounter: " + actionCounter);
+        // System.out.println("actionInProgress: " + actionInProgress);
 
         if (velocity.getY() >= 8 && attackCounter  == 0)
         {
             this.actionInProgress = SpriteMovement.FALL;
             actionCounter = 0;
+        }
+        else if (velocity.getY() > 0 && attackCounter  == 0)
+        {
+            this.actionInProgress = SpriteMovement.JUMP;
         }
 
         lastPlayerPosition = playerPosition;
@@ -173,10 +178,6 @@ public class PlayerMovement
                     this.actionInProgress = SpriteMovement.RUN;
                 }
             }
-            // else if (isWallCollide == true)
-            // {
-            //     velocity.setX(0);
-            // }
 		}
 		if (isKeyDown(KEY_A))
 		{
@@ -190,10 +191,6 @@ public class PlayerMovement
                     this.actionInProgress = SpriteMovement.RUN;
                 }
             }
-            // else if (isWallCollide == true)
-            // {
-            //     velocity.setX(0);
-            // }
 		}
         if (isKeyPressed(KEY_SPACE))
 		{

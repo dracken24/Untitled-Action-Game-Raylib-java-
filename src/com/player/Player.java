@@ -209,6 +209,11 @@ public class Player implements IMovable
 		movement.setIsJumping(isJumping);
 	}
 
+	public void setIsAtRest(boolean isAtRest)
+	{
+		movement.setIsJumping(isAtRest);
+	}
+
 	public void setActionCounter(int actionCounter)
 	{
 		movement.setActionCounter(actionCounter);

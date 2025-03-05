@@ -25,6 +25,7 @@ public interface IMovable
     void setColisionBox(Rectangle colisionBox);
     Vector2 getVelocity();
     void setIsJumping(boolean isJumping);
+    void setIsAtRest(boolean isAtRest);
     void setIsWallCollide(boolean isWallCollide);
     boolean getIsJumping();
     boolean getIsAtRest();
