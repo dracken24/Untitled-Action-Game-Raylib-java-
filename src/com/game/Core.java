@@ -27,23 +27,20 @@ import static com.raylib.Raylib.VIOLET;
 import static com.raylib.Raylib.LIGHTGRAY;
 
 import com.raylib.Vector2;
+import com.raylib.Camera2D;
 import com.raylib.Rectangle;
-
-import com.enums.PlayerType;
-import com.player.Player;
-import com.player.InitPlayer;
-import com.physic.PhysicCore;
 import static com.raylib.Raylib.beginMode2D;
 import static com.raylib.Raylib.endMode2D;
 import static com.raylib.Raylib.endTextureMode;
 import static com.raylib.Raylib.WHITE;
 import static com.raylib.Raylib.BLUE;
 
-import com.enums.SpriteMovement;
 import com.objects.Platform;
+import com.enums.PlayerType;
 import com.objects.MovableObject;
-import com.raylib.Camera2D;
-import com.interfaces.IMovable;
+import com.player.Player;
+import com.player.InitPlayer;
+import com.physic.PhysicCore;
 
 public class Core
 {
@@ -110,55 +107,20 @@ public class Core
 		followCamera(player.getPosition());
 
 		// Check collisions between the player and the platforms
-		checkObjectCollisions(player, platformTest);
+		physicCore.collision.checkObjectCollisions(player, platformTest, physicCore.gravity);
 
 		beginDrawing();
 			beginTextureMode(cameras.getMainTexture());
 				clearBackground(LIGHTGRAY);
 				beginMode2D(cameras.getMainCamera());
 				
-					drawText("Deplacement Gauche Droite: A & D", 10, 150, 20, VIOLET);
-					drawText("Sauter : Espace", 10, 170, 20, VIOLET);
-					drawText("Attaque: Clic Gauche", 10, 190, 20, VIOLET);
-					drawText("B: Set Colision Box Visible", 10, 220, 20, VIOLET);
-					drawText("R: Reset Player Position", 10, 240, 20, VIOLET);
-				
-					// Draw the platform
-					for (int i = 0; i < platformTest.length; i++)
-					{
-						platformTest[i].drawPlatform();
-					}
-
-					// Draw the movable object
-					for (int i = 0; i < movableObjectTest.length; i++)
-					{
-						
-						checkObjectCollisions(movableObjectTest[i], platformTest);
-						physicCore.gravity.applyGravity(movableObjectTest[i]);
-						movableObjectTest[i].update();
-					}
-					
-					// Update the player
-					player.update();
-
-					// Apply gravity to the player
-					physicCore.gravity.applyGravity(player);
+					onDrawning();
 
 				endMode2D();
 			endTextureMode();
 
-			// draw the final texture
-			drawTextureRec(
-				cameras.getMainTexture().getTexture(),
-				new Rectangle(
-					0,                                                    // x
-					0,                                                    // y
-					cameras.getMainTexture().getTexture().getWidth(),     // width
-					-cameras.getMainTexture().getTexture().getHeight()    // height (negative to invert)
-				),
-				new Vector2(0, 0),
-				WHITE
-			);
+				renderOnScreen();
+
 		endDrawing();
 	}
 
@@ -168,174 +130,50 @@ public class Core
 		mainCam.setTarget(targetPosition);
 	}
 
-	// /*
-	//  * Check collisions between an object and an array of objects
-	//  * @param arrayToCheck: The array of platforms to check
-	//  * @param objectToCheck: The object to check
-	//  */
-	<T> void checkObjectCollisions(IMovable objectToCheck, T[] arrayToCheck)
+	void onDrawning()
 	{
-		boolean onGround = false;
-		for (int i = 0; i < arrayToCheck.length; i++)
+		drawText("Deplacement Gauche Droite: A & D", 10, 150, 20, VIOLET);
+		drawText("Sauter : Espace", 10, 170, 20, VIOLET);
+		drawText("Attaque: Clic Gauche", 10, 190, 20, VIOLET);
+		drawText("B: Set Colision Box Visible", 10, 220, 20, VIOLET);
+		drawText("R: Reset Player Position", 10, 240, 20, VIOLET);
+	
+		// Draw the platform
+		for (int i = 0; i < platformTest.length; i++)
 		{
-			Rectangle objectCollisionBox;
-			if (objectToCheck instanceof Player)
-			{
-				objectCollisionBox = ((Player)objectToCheck).getColisionBoxPlusOffset();
-			}
-			else
-			{
-				objectCollisionBox = objectToCheck.getColisionBox();
-			}
+			platformTest[i].drawPlatform();
+		}
 
-			Rectangle platformRect = arrayToCheck[i] instanceof Platform ? 
-				((Platform)arrayToCheck[i]).getPlatform() : null;
-
-			String collisionSide = physicCore.gravity.checkCollision(
-				objectCollisionBox,
-				platformRect
-			);
-
-			// System.out.println( "collisionSide: " + collisionSide);
+		// Draw the movable object
+		for (int i = 0; i < movableObjectTest.length; i++)
+		{
 			
-			if (!collisionSide.equals("NONE"))
-			{
-				float adjustment = 0;
-				switch(collisionSide)
-				{
-					case "BOTTOM":
-						adjustment = objectCollisionBox.getY() + objectCollisionBox.getHeight() - platformRect.getY();
-						
-						if (objectToCheck instanceof Player)
-						{
-							Player player = (Player)objectToCheck;
-							if (player.getActionInProgress() == SpriteMovement.FALL || 
-								player.getActionInProgress() == SpriteMovement.JUMP)
-							{
-								player.setActionCounter(0);
-							}
-							if (player.getVelocity().getY() > 0)
-							{
-								player.getVelocity().setY(0);
-								player.setIsJumping(false);
-							}
-							onGround = true;
-						}
-						else if (objectToCheck instanceof MovableObject)
-						{
-							MovableObject obj = (MovableObject)objectToCheck;
-							float currentVelocityY = obj.getVelocity().getY();
-
-							// System.out.println("currentVelocityY: " + adjustment);
-							
-							// Si la vitesse est très faible, arrêter complètement
-							if (Math.abs(currentVelocityY) < 2.0f)
-							{
-								// System.out.println("STOP");
-								obj.getVelocity().setY(0);
-								obj.setIsJumping(false);
-								obj.setIsAtRest(true);
-								onGround = true;
-							}
-							else
-							{
-								// System.out.println("REBOUND");
-								// Sinon, appliquer le rebond
-								float newVelocityY = -currentVelocityY * obj.getBounceForce();
-								obj.getVelocity().setY(newVelocityY);
-								obj.setIsJumping(true);
-								obj.setIsAtRest(false);
-							}
-						}
-
-						if (Math.abs(adjustment) < 2.0f || objectToCheck instanceof Player)
-						{
-							objectToCheck.setPosition(new Vector2(
-								objectToCheck.getPosition().getX(),
-								objectToCheck.getPosition().getY() - adjustment
-							));
-						}
-						break;
-
-					case "TOP":
-						adjustment = platformRect.getY() + platformRect.getHeight() - objectCollisionBox.getY();
-						objectToCheck.setPosition(new Vector2(
-							objectToCheck.getPosition().getX(),
-							objectToCheck.getPosition().getY() + adjustment
-						));
-						
-						if (objectToCheck instanceof MovableObject)
-						{
-							MovableObject obj = (MovableObject)objectToCheck;
-							obj.getVelocity().setY(-obj.getVelocity().getY() * obj.getBounceForce());
-						}
-						break;
-
-					case "LEFT":
-					case "RIGHT":
-						adjustment = collisionSide.equals("LEFT") ? 
-							platformRect.getX() + platformRect.getWidth() - objectCollisionBox.getX() :
-							objectCollisionBox.getX() + objectCollisionBox.getWidth() - platformRect.getX();
-						
-						objectToCheck.setPosition(new Vector2(
-							objectToCheck.getPosition().getX() + (collisionSide.equals("LEFT") ? adjustment : -adjustment),
-							objectToCheck.getPosition().getY()
-						));
-						
-						if (objectToCheck instanceof MovableObject)
-						{
-							MovableObject obj = (MovableObject)objectToCheck;
-							obj.getVelocity().setX(-obj.getVelocity().getX() * obj.getBounceForce());
-						}
-
-						objectToCheck.setIsWallCollide(true);
-						
-						break;
-				}
-
-				// System.out.println("***************** ((Player)objectToCheck).getOffset().getX()" + ((Player)objectToCheck).getOffset().getX());
-
-				// Ajuster la boîte de collision après le déplacement
-				Rectangle colBox = objectToCheck.getColisionBox();
-				colBox.setX(objectToCheck.getPosition().getX() + (objectToCheck instanceof Player ? 
-					((Player)objectToCheck).getCollisionBoxOffset().getX() : 0));
-				colBox.setY(objectToCheck.getPosition().getY() + (objectToCheck instanceof Player ? 
-					((Player)objectToCheck).getCollisionBoxOffset().getY() : 0));
-				objectToCheck.setColisionBox(colBox);
-			}
-			else if (objectToCheck instanceof MovableObject && !onGround)
-			{
-				MovableObject obj = (MovableObject)objectToCheck;
-
-				obj.setIsJumping(true);
-				obj.setIsWallCollide(false);
-				obj.setIsAtRest(false);
-			}
-			else if (objectToCheck instanceof MovableObject && onGround)
-			{
-				MovableObject obj = (MovableObject)objectToCheck;
-
-				obj.setIsJumping(false);
-				obj.setIsWallCollide(false);
-				obj.setIsAtRest(true);
-			}
-
-			// if (objectToCheck instanceof MovableObject)
-			// {
-			// 	MovableObject obj = (MovableObject)objectToCheck;
-
-			// 	System.out.println("*****************");
-			// 	System.out.println("isJumping: " + obj.getIsJumping());
-			// 	System.out.println("isAtRest: " + obj.getIsAtRest());
-			// 	System.out.println("velocity: " + obj.getVelocity().getY());
-			// 	System.out.println("*****************");
-			// }
+			physicCore.collision.checkObjectCollisions(movableObjectTest[i], platformTest, physicCore.gravity);
+			physicCore.gravity.applyGravity(movableObjectTest[i]);
+			movableObjectTest[i].update();
 		}
+		
+		// Update the player
+		player.update();
 
-		if (!onGround)
-		{
-			objectToCheck.setIsJumping(true);
-		}
+		// Apply gravity to the player
+		physicCore.gravity.applyGravity(player);
+	}
+
+	void renderOnScreen()
+	{
+		// draw the final texture
+		drawTextureRec(
+			cameras.getMainTexture().getTexture(),
+			new Rectangle(
+				0,                                                    // x
+				0,                                                    // y
+				cameras.getMainTexture().getTexture().getWidth(),     // width
+				-cameras.getMainTexture().getTexture().getHeight()    // height (negative to invert)
+			),
+			new Vector2(0, 0),
+			WHITE
+		);
 	}
 
 	// TODO: Adjust this function with player choice lather
