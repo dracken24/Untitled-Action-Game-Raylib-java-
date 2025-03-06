@@ -23,6 +23,8 @@ import com.player.Player;
 import com.objects.Platform;
 import com.enums.SpriteMovement;
 
+import java.util.List;
+
 public class Collision
 {
     // /*
@@ -30,10 +32,10 @@ public class Collision
 	//  * @param arrayToCheck: The array of platforms to check
 	//  * @param objectToCheck: The object to check
 	//  */
-	public <T> void checkObjectCollisions(IMovable objectToCheck, T[] arrayToCheck, Gravity gravity)
+	public <T> void checkObjectCollisions(IMovable objectToCheck, List<T> arrayToCheck, Gravity gravity)
 	{
 		boolean onGround = false;
-		for (int i = 0; i < arrayToCheck.length; i++)
+		for (T element : arrayToCheck)
 		{
 			Rectangle objectCollisionBox;
 			if (objectToCheck instanceof Player)
@@ -45,8 +47,8 @@ public class Collision
 				objectCollisionBox = objectToCheck.getColisionBox();
 			}
 
-			Rectangle platformRect = arrayToCheck[i] instanceof Platform ? 
-				((Platform)arrayToCheck[i]).getPlatform() : null;
+			Rectangle platformRect = element instanceof Platform ?
+				((Platform)element).getPlatform() : null;
 
 			String collisionSide = gravity.checkCollision(
 				objectCollisionBox,

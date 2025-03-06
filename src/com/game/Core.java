@@ -17,6 +17,9 @@ package com.game;
 import static com.raylib.Raylib.initWindow;
 import static com.raylib.Raylib.setTargetFPS;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.raylib.Raylib.beginDrawing;
 import static com.raylib.Raylib.beginTextureMode;
 import static com.raylib.Raylib.clearBackground;
@@ -55,8 +58,8 @@ public class Core
 
 	PhysicCore	physicCore;
 
-	Platform[]	platformTest;
-	MovableObject[] movableObjectTest;
+	List<MovableObject> movableObjectTest;
+	List<Platform>	platformTest;
 
 	Cameras	cameras;
 
@@ -76,16 +79,23 @@ public class Core
 		initPlayer();
 
 		// Initialize the platform
-		platformTest = new Platform[4];
-		platformTest[0] = new Platform(WindowSize.getX() / 2 - 150, WindowSize.getY() / 2 + 200, 300, 40);
-		platformTest[1] = new Platform(WindowSize.getX() / 2 - 480, WindowSize.getY() / 2 + 360, 300, 40);
-		platformTest[2] = new Platform(WindowSize.getX() / 2 + 180, WindowSize.getY() / 2 + 360, 300, 40);
-		platformTest[3] = new Platform(WindowSize.getX() / 2 - 600, WindowSize.getY() / 2 + 520, 1200, 60);
+		platformTest = new ArrayList<Platform>();
+		platformTest.add(new Platform(WindowSize.getX() / 2 - 150, WindowSize.getY() / 2 + 200, 300, 40));
+		platformTest.add(new Platform(WindowSize.getX() / 2 - 480, WindowSize.getY() / 2 + 360, 300, 40));
+		platformTest.add(new Platform(WindowSize.getX() / 2 + 180, WindowSize.getY() / 2 + 360, 300, 40));
+		platformTest.add(new Platform(WindowSize.getX() / 2 - 600, WindowSize.getY() / 2 + 520, 1200, 60));
 
 		// Initialize the movable object
-		movableObjectTest = new MovableObject[1];
-		movableObjectTest[0] = new MovableObject(new Vector2(WindowSize.getX() / 2 - 12 + 100, WindowSize.getY() / 2 + 12 - 200), new Vector2(24, 24), new Rectangle(0, 0, 24, 24), 1, new Vector2(12, 12), BLUE);
-		movableObjectTest[0].setBounceForce(0.7f);
+		movableObjectTest = new ArrayList<MovableObject>();
+		movableObjectTest.add(new MovableObject(
+			new Vector2(WindowSize.getX() / 2 - 12 + 100,
+			WindowSize.getY() / 2 + 12 - 200),
+			new Vector2(24, 24), new Rectangle(0, 0, 24, 24),
+			1,
+			new Vector2(12, 12),
+			BLUE
+		));
+		movableObjectTest.get(0).setBounceForce(0.70f);
 		
 		physicCore = new PhysicCore();
 
@@ -139,18 +149,17 @@ public class Core
 		drawText("R: Reset Player Position", 10, 240, 20, VIOLET);
 	
 		// Draw the platform
-		for (int i = 0; i < platformTest.length; i++)
+		for (Platform platform : platformTest)
 		{
-			platformTest[i].drawPlatform();
+			platform.drawPlatform();
 		}
 
 		// Draw the movable object
-		for (int i = 0; i < movableObjectTest.length; i++)
+		for (MovableObject movableObject : movableObjectTest)
 		{
-			
-			physicCore.collision.checkObjectCollisions(movableObjectTest[i], platformTest, physicCore.gravity);
-			physicCore.gravity.applyGravity(movableObjectTest[i]);
-			movableObjectTest[i].update();
+			physicCore.collision.checkObjectCollisions(movableObject, platformTest, physicCore.gravity);
+			physicCore.gravity.applyGravity(movableObject);
+			movableObject.update();
 		}
 		
 		// Update the player

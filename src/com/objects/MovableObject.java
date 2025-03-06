@@ -112,26 +112,26 @@ public class MovableObject implements IMovable
     {
         if (isJumping)
         {
-            // Ajoute une accélération constante (gravité)
+            // Add a constant acceleration (gravity)
             velocity.setY(velocity.getY() + 0.5f);
             
-            // Limite la vitesse de chute maximale
+            // Limit the maximum fall speed
             if (velocity.getY() > fallSpeedMax)
             {
                 velocity.setY(fallSpeedMax);
             }
         }
         
-        // Ajoute un peu de friction horizontale
+        // Add a little horizontal friction
         velocity.setX(velocity.getX() * 0.98f);
         
-        // Arrête le mouvement si la vitesse est très faible
+        // Stop the movement if the speed is very low
         if (Math.abs(velocity.getX()) < 0.01f)
         {
             velocity.setX(0);
         }
         
-        // Si l'objet n'est pas en train de sauter et a une vélocité très faible
+        // If the object is not jumping and has a very low velocity
         if (!isJumping && Math.abs(velocity.getY()) < 0.01f)
         {
             velocity.setY(0);
