@@ -213,13 +213,21 @@ public class Collision
 					((Player)objectToCheck).getCollisionBoxOffset().getY() : 0));
 				objectToCheck.setColisionBox(colBox);
 			}
-			else
+			else if (objectToCheck instanceof MovableObject && !onGround)
 			{
-				// MovableObject obj = (MovableObject)objectToCheck;
+				MovableObject obj = (MovableObject)objectToCheck;
 
-				objectToCheck.setIsJumping(true);
-				objectToCheck.setIsWallCollide(false);
-				objectToCheck.setIsAtRest(false);
+				obj.setIsJumping(true);
+				obj.setIsWallCollide(false);
+				obj.setIsAtRest(false);
+			}
+			else if (objectToCheck instanceof MovableObject && onGround)
+			{
+				MovableObject obj = (MovableObject)objectToCheck;
+
+				obj.setIsJumping(false);
+				obj.setIsWallCollide(false);
+				obj.setIsAtRest(true);
 			}
 		}
 
