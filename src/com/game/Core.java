@@ -154,7 +154,7 @@ public class Core
 			platform.drawPlatform();
 		}
 
-		// Update the player
+		// Update the player 
 		player.update();
 
 		// Apply gravity to the player
