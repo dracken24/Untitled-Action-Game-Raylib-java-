@@ -16,6 +16,7 @@ package com.game;
 
 import static com.raylib.Raylib.initWindow;
 import static com.raylib.Raylib.setTargetFPS;
+import static com.raylib.Raylib.KeyboardKey.KEY_R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ import static com.raylib.Raylib.drawText;
 import static com.raylib.Raylib.drawTextureRec;
 import static com.raylib.Raylib.VIOLET;
 import static com.raylib.Raylib.LIGHTGRAY;
+import static com.raylib.Raylib.isKeyPressed;
 
 import com.raylib.Vector2;
 import com.raylib.Camera2D;
@@ -88,11 +90,11 @@ public class Core
 		// Initialize the movable object
 		movableObjectTest = new ArrayList<MovableObject>();
 		movableObjectTest.add(new MovableObject(
-			new Vector2(WindowSize.getX() / 2 - 12 + 100,
-			WindowSize.getY() / 2 + 12 - 200),
-			new Vector2(24, 24), new Rectangle(0, 0, 24, 24),
+			new Vector2(WindowSize.getX() / 2 - 16,
+			WindowSize.getY() / 2 + 16 - 200),
+			new Vector2(32, 32), new Rectangle(0, 0, 32, 32),
 			1,
-			new Vector2(12, 12),
+			new Vector2(16, 16),
 			BLUE
 		));
 		movableObjectTest.get(0).setBounceForce(0.70f);
@@ -132,6 +134,14 @@ public class Core
 				renderOnScreen();
 
 		endDrawing();
+
+		if (isKeyPressed(KEY_R))
+		{
+			movableObjectTest.get(0).setPosition(new Vector2(WindowSize.getX() / 2 - 25 + 100,
+			WindowSize.getY() / 2 + 25 - 200));
+			// new Vector2(WindowSize.getX() / 2 - 25 + 100,
+			// WindowSize.getY() / 2 + 25 - 200)
+		}
 	}
 
 	void followCamera(Vector2 targetPosition)
@@ -165,7 +175,7 @@ public class Core
 		{
 			physicCore.collision.checkObjectCollisions(movableObject, platformTest, physicCore.gravity);
 			physicCore.gravity.applyGravity(movableObject);
-			// physicCore.collision.checkPlayerMovableObjectCollision(player, movableObject, physicCore.gravity);
+			physicCore.collision.checkPlayerMovableObjectCollision(player, movableObject, physicCore.gravity);
 			movableObject.applyMovement(movableObject.getPosition(), movableObject.getColisionBox(), movableObject.getVelocity());
 			movableObject.update();
 		}

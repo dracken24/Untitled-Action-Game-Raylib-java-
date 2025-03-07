@@ -121,10 +121,13 @@ public class MovableObject implements IMovable
             {
                 velocity.setY(fallSpeedMax);
             }
+			// Add a little horizontal friction
+			velocity.setX(velocity.getX() * 0.98f);
         }
-        
-        // Add a little horizontal friction
-        velocity.setX(velocity.getX() * 0.98f);
+		else
+		{
+			velocity.setX(velocity.getX() * 0.92f);
+		}
         
         // Stop the movement if the speed is very low
         if (Math.abs(velocity.getX()) < 0.01f)

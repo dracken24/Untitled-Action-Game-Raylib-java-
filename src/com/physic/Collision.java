@@ -27,6 +27,9 @@ import java.util.List;
 
 public class Collision
 {
+	float veloxityMosifierY = 6;
+	float veloxityMosifierX = 6;
+
 	public void checkPlayerMovableObjectCollision(IMovable player,  IMovable movableObject, Gravity gravity)
 	{
 		Rectangle playerCollBox = ((Player)player).getColisionBoxPlusOffset();
@@ -40,21 +43,37 @@ public class Collision
 		
 		// System.out.println("objectCollBox: " + objectCollBox.getX() + " y: " + objectCollBox.getY());
 		// System.out.println("Collision side: " + collisionSide);
-		System.out.println("velocity: " + movableObject.getVelocity().getX());
+		// System.out.println("velocity: " + movableObject.getVelocity().getX());
 
 		switch(collisionSide)
 		{
 			case "BOTTOM":
+				// System.out.println("Collision side: " + collisionSide);
+				// ((MovableObject)movableObject).setVelocity(new Vector2(
+				// 	movableObject.getVelocity().getX(),
+				// 	veloxityMosifierX
+				// ));
 				break;
 			case "TOP":
+				// ((MovableObject)movableObject).setVelocity(new Vector2(
+				// 	movableObject.getVelocity().getX(),
+				// 	-veloxityMosifierX
+				// ));
 				break;
 			case "LEFT":
-				break;
-			case "RIGHT":
-				System.out.println(movableObject.getPosition().getX() - (playerCollBox.getX() - (objectCollBox.getX()) - objectCollBox.getWidth()));
+				// System.out.println(movableObject.getPosition().getX() - (playerCollBox.getX() - (objectCollBox.getX()) - objectCollBox.getWidth()));
 				// Push movable to the left
 				((MovableObject)movableObject).setVelocity(new Vector2(
-					10,
+					-veloxityMosifierY,
+					movableObject.getVelocity().getY()
+				));
+				break;
+			case "RIGHT":
+				// System.out.println(movableObject.getPosition().getX() - (playerCollBox.getX() - (objectCollBox.getX()) - objectCollBox.getWidth()));
+				// Push movable to the left
+
+				((MovableObject)movableObject).setVelocity(new Vector2(
+					veloxityMosifierY,
 					movableObject.getVelocity().getY()
 				));
 				break;
@@ -98,6 +117,12 @@ public class Collision
 				{
 					case "BOTTOM":
 						adjustment = objectCollisionBox.getY() + objectCollisionBox.getHeight() - platformRect.getY();
+
+						// Ajuster la position avant d'appliquer le rebond
+						objectToCheck.setPosition(new Vector2(
+							objectToCheck.getPosition().getX(),
+							objectToCheck.getPosition().getY() - adjustment
+						));
 						
 						if (objectToCheck instanceof Player)
 						{
@@ -139,14 +164,6 @@ public class Collision
 								obj.setIsJumping(true);
 								obj.setIsAtRest(false);
 							}
-						}
-
-						if (Math.abs(adjustment) < 2.0f || objectToCheck instanceof Player)
-						{
-							objectToCheck.setPosition(new Vector2(
-								objectToCheck.getPosition().getX(),
-								objectToCheck.getPosition().getY() - adjustment
-							));
 						}
 						break;
 
@@ -196,33 +213,14 @@ public class Collision
 					((Player)objectToCheck).getCollisionBoxOffset().getY() : 0));
 				objectToCheck.setColisionBox(colBox);
 			}
-			else if (objectToCheck instanceof MovableObject && !onGround)
+			else
 			{
-				MovableObject obj = (MovableObject)objectToCheck;
+				// MovableObject obj = (MovableObject)objectToCheck;
 
-				obj.setIsJumping(true);
-				obj.setIsWallCollide(false);
-				obj.setIsAtRest(false);
+				objectToCheck.setIsJumping(true);
+				objectToCheck.setIsWallCollide(false);
+				objectToCheck.setIsAtRest(false);
 			}
-			else if (objectToCheck instanceof MovableObject && onGround)
-			{
-				MovableObject obj = (MovableObject)objectToCheck;
-
-				obj.setIsJumping(false);
-				obj.setIsWallCollide(false);
-				obj.setIsAtRest(true);
-			}
-
-			// if (objectToCheck instanceof MovableObject)
-			// {
-			// 	MovableObject obj = (MovableObject)objectToCheck;
-
-			// 	System.out.println("*****************");
-			// 	System.out.println("isJumping: " + obj.getIsJumping());
-			// 	System.out.println("isAtRest: " + obj.getIsAtRest());
-			// 	System.out.println("velocity: " + obj.getVelocity().getY());
-			// 	System.out.println("*****************");
-			// }
 		}
 
 		if (!onGround)

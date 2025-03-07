@@ -61,6 +61,7 @@ public class PlayerMovement
     Vector2 velocityMinMax_X;
     Vector2 lastPlayerPosition;
     float fallSpeedMax;
+    float jumpForce;
 
     boolean isJumping;
     boolean isAtRest;
@@ -82,7 +83,8 @@ public class PlayerMovement
         velocityMinMax_Y = new Vector2(0, 12);
         velocityMinMax_X = new Vector2(0, 4);
         lastPlayerPosition = new Vector2(0, 0);
-        fallSpeedMax = 12;
+        jumpForce = -14;
+        fallSpeedMax = 16;
         isJumping = false;
         isWallCollide = false;
     }
@@ -127,7 +129,7 @@ public class PlayerMovement
         if (isJumping || isAtRest)
         {
             // add gravity
-            velocity.setY(velocity.getY() + 0.5f);
+            // velocity.setY(velocity.getY() + 0.5f);
             
             // limit the max fall speed
             if (velocity.getY() > fallSpeedMax)
@@ -135,7 +137,7 @@ public class PlayerMovement
                 velocity.setY(fallSpeedMax);
             }
 
-            // velocity.setY(velocity.getY() + 0.0001f);
+            velocity.setY(velocity.getY() + 0.4f);
         }
         else
         {
@@ -201,7 +203,7 @@ public class PlayerMovement
             }
             if (velocity.getY() == 0)
             {
-                velocity.setY(-16);
+                velocity.setY(jumpForce);
             }
             isKeyDown = true;
             isJumping = true;
