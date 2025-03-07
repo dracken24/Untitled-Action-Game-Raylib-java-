@@ -27,6 +27,40 @@ import java.util.List;
 
 public class Collision
 {
+	public void checkPlayerMovableObjectCollision(IMovable player,  IMovable movableObject, Gravity gravity)
+	{
+		Rectangle playerCollBox = ((Player)player).getColisionBoxPlusOffset();
+		Rectangle objectCollBox = movableObject.getColisionBox();
+
+		String collisionSide = gravity.checkCollision(
+			playerCollBox,
+			objectCollBox
+		);
+
+		
+		// System.out.println("objectCollBox: " + objectCollBox.getX() + " y: " + objectCollBox.getY());
+		// System.out.println("Collision side: " + collisionSide);
+		System.out.println("velocity: " + movableObject.getVelocity().getX());
+
+		switch(collisionSide)
+		{
+			case "BOTTOM":
+				break;
+			case "TOP":
+				break;
+			case "LEFT":
+				break;
+			case "RIGHT":
+				System.out.println(movableObject.getPosition().getX() - (playerCollBox.getX() - (objectCollBox.getX()) - objectCollBox.getWidth()));
+				// Push movable to the left
+				((MovableObject)movableObject).setVelocity(new Vector2(
+					10,
+					movableObject.getVelocity().getY()
+				));
+				break;
+		}
+	}
+
     // /*
 	//  * Check collisions between an object and an array of objects
 	//  * @param arrayToCheck: The array of platforms to check

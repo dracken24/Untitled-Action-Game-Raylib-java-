@@ -86,6 +86,7 @@ public class MovableObject implements IMovable
         // System.out.println("MovableObject isJumping: " + isJumping);
         // System.out.println("MovableObject velocity: " + velocity.getY());
         adjustVelocity();
+		
 		if (position != new Vector2(this.colisionBox.getX(), this.colisionBox.getY()))
 		{
 			this.colisionBox.setX(this.position.getX());
@@ -289,7 +290,8 @@ public class MovableObject implements IMovable
         this.bounceForce = bounceForce;
     }
 
-    public void setIsAtRest(boolean isAtRest) {
+    public void setIsAtRest(boolean isAtRest)
+	{
         this.isAtRest = isAtRest;
     }
 }

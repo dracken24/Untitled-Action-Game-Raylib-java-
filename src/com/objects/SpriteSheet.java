@@ -39,7 +39,7 @@ public class SpriteSheet
 	int frameCount;				// Number of frames in the sprite sheet
 	
 	int currentFrame;			// Current frame of the sprite sheet
-	Vector2 frameSize;			// Width and height of the frame in the sprite sheet
+	Vector2 tileSize;			// Width and height of the frame in the sprite sheet
 	Vector2 ColisionBox;		// Colision box of the sprite sheet
 
 	int skipFPS;				// Number of frames to skip in the sprite sheet
@@ -50,32 +50,32 @@ public class SpriteSheet
 /***                                 CONSTRUCTOR                                   */
 /***********************************************************************************/
 
-	public SpriteSheet(String path, int frameCount, Vector2 frameSize, int skipFPS)
+	public SpriteSheet(String path, int frameCount, Vector2 tileSize, int skipFPS)
 	{
 		initSpriteSheet(
 			path,
 			frameCount,
-			frameSize,
+			tileSize,
 			skipFPS,
 			1,
-			new Vector2(frameSize.getX() / 2, frameSize.getY() / 2)
+			new Vector2(tileSize.getX() / 2, tileSize.getY() / 2)
 		);
 	}
 
-	public SpriteSheet(String path, int frameCount, Vector2 frameSize,
+	public SpriteSheet(String path, int frameCount, Vector2 tileSize,
 		int skipFPS, float scale, Vector2 position)
 	{
 		initSpriteSheet(
 			path,
 			frameCount,
-			frameSize,
+			tileSize,
 			skipFPS,
 			scale,
 			position
 		);
 	}
 
-	void initSpriteSheet(String path, int frameCount, Vector2 frameSize,
+	void initSpriteSheet(String path, int frameCount, Vector2 tileSize,
 	int skipFPS, float scale, Vector2 position)
 	{
 		try
@@ -88,7 +88,7 @@ public class SpriteSheet
 		}
 
 		this.position = new Vector2(position.getX(), position.getY());
-		this.ColisionBox = new Vector2(frameSize.getX(), frameSize.getY());
+		this.ColisionBox = new Vector2(tileSize.getX(), tileSize.getY());
 		this.scale = scale;
 		this.rotation = 0;
 		this.color = WHITE;
@@ -96,7 +96,7 @@ public class SpriteSheet
 		this.currentFrame = 0;
 		this.skipFPS = skipFPS;
 		this.skipFPSCount = 0;
-		this.frameSize = frameSize;
+		this.tileSize = tileSize;
 		this.animationTotalFrame = frameCount * skipFPS;
 	}
 
@@ -107,18 +107,18 @@ public class SpriteSheet
 	public void updateSprite(boolean resetFrame, boolean invertXAxis, Vector2 playerPosition, Vector2 offset)
 	{
 		Rectangle source = new Rectangle(
-			currentFrame * frameSize.getX(),
+			currentFrame * tileSize.getX(),
 			0,
-			frameSize.getX(),
-			frameSize.getY()
+			tileSize.getX(),
+			tileSize.getY()
 		);
 		Rectangle dest = new Rectangle(
 			playerPosition.getX() + offset.getX(), 
 			playerPosition.getY() + offset.getY(), 
-			frameSize.getX() * scale,
-			frameSize.getY() * scale
+			tileSize.getX() * scale,
+			tileSize.getY() * scale
 		);
-		Vector2 origin = new Vector2(frameSize.getX() * scale / 2, frameSize.getY() * scale / 2);
+		Vector2 origin = new Vector2(tileSize.getX() * scale / 2, tileSize.getY() * scale / 2);
 
 		// NOTE: param source is for the zone of the sprite sheet to draw
 		// NOTE: param dest is for the position and size of the sprite sheet to draw
@@ -151,17 +151,17 @@ public class SpriteSheet
 	public void drawColisionBox(Vector2 colisionBoxPosition)
 	{
 		drawRectangle(
-			(int)(colisionBoxPosition.getX() - (frameSize.getX() * scale / 2)), 
-			(int)(colisionBoxPosition.getY() - (frameSize.getY() * scale / 2)), 
-			(int)(frameSize.getX() * scale), 
-			(int)(frameSize.getY() * scale), 
+			(int)(colisionBoxPosition.getX() - (tileSize.getX() * scale / 2)), 
+			(int)(colisionBoxPosition.getY() - (tileSize.getY() * scale / 2)), 
+			(int)(tileSize.getX() * scale), 
+			(int)(tileSize.getY() * scale), 
 			color
 		);
 	}
 
 	public void invertXAxis(Rectangle source)
 	{
-		source.setWidth(-frameSize.getX());
+		source.setWidth(-tileSize.getX());
 	}
 
 	public void resetCounter()
@@ -214,9 +214,9 @@ public class SpriteSheet
 		return skipFPSCount;
 	}
 
-	public Vector2 getFrameSize()
+	public Vector2 gettileSize()
 	{
-		return frameSize;
+		return tileSize;
 	}
 
 	public int getAnimationTotalFrame()
@@ -264,8 +264,8 @@ public class SpriteSheet
 		this.skipFPSCount = skipFPSCount;
 	}
 
-	public void setFrameSize(Vector2 frameSize)
+	public void settileSize(Vector2 tileSize)
 	{
-		this.frameSize = frameSize;
+		this.tileSize = tileSize;
 	}
 }

@@ -154,19 +154,24 @@ public class Core
 			platform.drawPlatform();
 		}
 
-		// Draw the movable object
-		for (MovableObject movableObject : movableObjectTest)
-		{
-			physicCore.collision.checkObjectCollisions(movableObject, platformTest, physicCore.gravity);
-			physicCore.gravity.applyGravity(movableObject);
-			movableObject.update();
-		}
-		
 		// Update the player
 		player.update();
 
 		// Apply gravity to the player
 		physicCore.gravity.applyGravity(player);
+
+		// Draw the movable object
+		for (MovableObject movableObject : movableObjectTest)
+		{
+			physicCore.collision.checkObjectCollisions(movableObject, platformTest, physicCore.gravity);
+			physicCore.gravity.applyGravity(movableObject);
+			// physicCore.collision.checkPlayerMovableObjectCollision(player, movableObject, physicCore.gravity);
+			movableObject.applyMovement(movableObject.getPosition(), movableObject.getColisionBox(), movableObject.getVelocity());
+			movableObject.update();
+		}
+
+		// physicCore.collision.checkObjectCollisions(player, movableObjectTest, physicCore.gravity);
+		
 	}
 
 	void renderOnScreen()
