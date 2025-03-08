@@ -55,6 +55,7 @@ public class PlayerMovement
 
     int actionCounter;
     int attackCounter;
+    int weaponHitCounter;
 
     Vector2 velocity;
     Vector2 velocityMinMax_Y;
@@ -79,6 +80,7 @@ public class PlayerMovement
         lastAction = null;
         actionCounter = 0;
         attackCounter = 0;
+        weaponHitCounter = 0;
         velocity = new Vector2(0, 0);
         velocityMinMax_Y = new Vector2(0, 12);
         velocityMinMax_X = new Vector2(0, 4);
@@ -215,6 +217,7 @@ public class PlayerMovement
             {
                 this.actionInProgress = SpriteMovement.ATTACK01;
                 attackCounter = attack01.getAnimationTotalFrame();
+                weaponHitCounter = 10;
             }
 		}
 
@@ -232,6 +235,10 @@ public class PlayerMovement
         if (attackCounter > 0)
         {
             attackCounter--;
+        }
+        if (weaponHitCounter > 0)
+        {
+            weaponHitCounter--;
         }
 	}
 
@@ -309,6 +316,11 @@ public class PlayerMovement
         return isAtRest;
     }
 
+    public boolean getRightSide()
+    {
+        return rightSide;
+    }
+
     public int getActionCounter()
     {
         return actionCounter;
@@ -317,6 +329,11 @@ public class PlayerMovement
     public SpriteMovement getActionInProgress()
     {
         return actionInProgress;
+    }
+
+    public int getWeaponHitCounter()
+    {
+        return weaponHitCounter;
     }
 
 /***********************************************************************************/

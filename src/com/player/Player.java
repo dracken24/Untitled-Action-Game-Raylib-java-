@@ -18,10 +18,11 @@ import com.enums.SpriteMovement;
 import com.raylib.Vector2;
 import static com.raylib.Raylib.drawRectangleRec;
 import static com.raylib.Raylib.WHITE;
-import static com.raylib.Raylib.DARKPURPLE;
 import static com.raylib.Raylib.KeyboardKey.KEY_B;
 import static com.raylib.Raylib.KeyboardKey.KEY_R;
 import static com.raylib.Raylib.isKeyPressed;
+
+import com.raylib.Color;
 
 import com.raylib.Rectangle;
 
@@ -33,10 +34,11 @@ public class Player implements IMovable
 /***                                 VARIABLES                                     */
 /***********************************************************************************/
 
-	PlayerMovement	movement;
+	public PlayerMovement	movement;
 	Vector2		position;
 	Vector2		size;
 	Rectangle	colisionBox;
+	Rectangle	weaponColisionBox;
 	int			scale;
 	Vector2		offset;
 	Vector2		collisionBoxOffset;
@@ -45,17 +47,22 @@ public class Player implements IMovable
 	Rectangle	initialColisionBox;
 
 	private float bounceForce;
+
+	public static Color RED_SHADOW = new Color((byte)230, (byte)41, (byte)55, (byte)105);
+	public static Color DARKPURPLE_SHADOW = new Color((byte)112, (byte)31, (byte)126, (byte)105);
 /***********************************************************************************/
 /***                                 CONSTRUCTOR                                   */
 /***********************************************************************************/
 
-	public Player(Vector2 position, Vector2 size, Rectangle colisionBox, int scale, Vector2 offset)
+	public Player(Vector2 position, Vector2 size, Rectangle colisionBox,
+		Rectangle weaponColisionBox, int scale, Vector2 offset)
 	{
 		movement = new PlayerMovement();
 		this.position = position;
 		this.size = size;
 		this.scale = scale;
 		this.colisionBox = colisionBox;
+		this.weaponColisionBox = weaponColisionBox;
 		this.offset = offset;
 		initialPosition = new Vector2(position.getX(), position.getY());
 		initialColisionBox = new Rectangle(colisionBox.getX(), colisionBox.getY(), colisionBox.getWidth(), colisionBox.getHeight());
@@ -78,10 +85,18 @@ public class Player implements IMovable
 		if (isDebug)
 		{
 			drawColisionBox();
+			// System.out.println("Weapon coll box x: " + this.weaponColisionBox.getX() + "  y: " + this.weaponColisionBox.getY() );
 		}
 		
+		adjustWeaponCollBox();
+
 		movement.applyMovement(position, colisionBox, movement.getVelocity());
 		movement.update(position, offset);
+		
+		if (movement.getWeaponHitCounter() > 0)
+		{
+			drawWeaponCollisionBox();
+		}
 
 		// TODO: For debug
 		// Reset position and colision box to initial position
@@ -94,15 +109,40 @@ public class Player implements IMovable
 		}
 	}
 
+	void adjustWeaponCollBox()
+	{
+		float x = movement.getRightSide() ?
+			-(this.weaponColisionBox.getWidth() * scale) :
+				(this.colisionBox.getWidth() * this.scale);
+
+		float y = (this.colisionBox.getHeight() - this.weaponColisionBox.getHeight());
+
+		this.weaponColisionBox.setX(this.colisionBox.getX() + x);
+		this.weaponColisionBox.setY(this.colisionBox.getY() + y);
+	}
+
+	void drawWeaponCollisionBox()
+	{
+		Rectangle colBox = new Rectangle(
+			this.weaponColisionBox.getX() + offset.getX(), 
+			this.weaponColisionBox.getY() + offset.getY(), 
+			this.weaponColisionBox.getWidth() * scale,
+			this.weaponColisionBox.getHeight() * scale
+		);
+
+		drawRectangleRec(colBox, RED_SHADOW);
+	}
+
 	void drawColisionBox()
 	{
 		Rectangle colBox = new Rectangle(
-			colisionBox.getX() + offset.getX(), 
-			colisionBox.getY() + offset.getY(), 
-			colisionBox.getWidth() * scale,
-			colisionBox.getHeight() * scale
+			this.colisionBox.getX() + offset.getX(), 
+			this.colisionBox.getY() + offset.getY(), 
+			this.colisionBox.getWidth() * scale,
+			this.colisionBox.getHeight() * scale
 		);
-		drawRectangleRec(colBox, DARKPURPLE);
+		
+		drawRectangleRec(colBox, DARKPURPLE_SHADOW);
 	}
 
 	void drawSize()
@@ -174,6 +214,16 @@ public class Player implements IMovable
 		return collisionBoxOffset;
 	}
 
+	public Rectangle getWeaponCollisonBox()
+	{
+		return weaponColisionBox;
+	}
+
+	public Rectangle getWeaponCollisonBoxPlusOffset()
+	{
+		return new Rectangle(weaponColisionBox.getX() + offset.getX(), weaponColisionBox.getY() + offset.getY(), weaponColisionBox.getWidth() * scale, weaponColisionBox.getHeight() * scale);
+	}
+
 /***********************************************************************************/
 /***                                 SETTERS                                       */
 /***********************************************************************************/
@@ -226,5 +276,10 @@ public class Player implements IMovable
 	public void setBounceForce(float bounceForce)
 	{
 		this.bounceForce = bounceForce;
+	}
+
+	public void setWeaponCollisonBox(Rectangle collBox)
+	{
+		this.weaponColisionBox = collBox;
 	}
 }

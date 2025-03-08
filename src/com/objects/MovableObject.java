@@ -70,7 +70,7 @@ public class MovableObject implements IMovable
 		lastPosition = new Vector2(0, 0);
 		isJumping = false;
 		isWallCollide = false;
-		fallSpeedMax = 10;
+		fallSpeedMax = 14;
 		lastVelocity = new Vector2(0, 0);
 
 		initialPosition = new Vector2(position.getX(), position.getY());

@@ -85,19 +85,64 @@ public class Core
 		platformTest.add(new Platform(WindowSize.getX() / 2 - 150, WindowSize.getY() / 2 + 200, 300, 40));
 		platformTest.add(new Platform(WindowSize.getX() / 2 - 480, WindowSize.getY() / 2 + 360, 300, 40));
 		platformTest.add(new Platform(WindowSize.getX() / 2 + 180, WindowSize.getY() / 2 + 360, 300, 40));
-		platformTest.add(new Platform(WindowSize.getX() / 2 - 600, WindowSize.getY() / 2 + 520, 1200, 60));
+		platformTest.add(new Platform(WindowSize.getX() / 2 - 800, WindowSize.getY() / 2 + 520, 1600, 60));
 
 		// Initialize the movable object
 		movableObjectTest = new ArrayList<MovableObject>();
 		movableObjectTest.add(new MovableObject(
-			new Vector2(WindowSize.getX() / 2 - 16,
+			new Vector2(WindowSize.getX() / 2 - 16 + 100,
 			WindowSize.getY() / 2 + 16 - 200),
 			new Vector2(32, 32), new Rectangle(0, 0, 32, 32),
 			1,
 			new Vector2(16, 16),
 			BLUE
 		));
-		movableObjectTest.get(0).setBounceForce(0.70f);
+
+		movableObjectTest.add(new MovableObject(
+			new Vector2(WindowSize.getX() / 2 - 16 + 150,
+			WindowSize.getY() / 2 + 16 - 200),
+			new Vector2(32, 32), new Rectangle(0, 0, 32, 32),
+			1,
+			new Vector2(16, 16),
+			BLUE
+		));
+
+		movableObjectTest.add(new MovableObject(
+			new Vector2(WindowSize.getX() / 2 - 16 + 200,
+			WindowSize.getY() / 2 + 16 - 200),
+			new Vector2(32, 32), new Rectangle(0, 0, 32, 32),
+			1,
+			new Vector2(16, 16),
+			BLUE
+		));
+
+		movableObjectTest.add(new MovableObject(
+			new Vector2(WindowSize.getX() / 2 - 16 - 100,
+			WindowSize.getY() / 2 + 16 - 200),
+			new Vector2(32, 32), new Rectangle(0, 0, 32, 32),
+			1,
+			new Vector2(16, 16),
+			BLUE
+		));
+
+		movableObjectTest.add(new MovableObject(
+			new Vector2(WindowSize.getX() / 2 - 16 - 150,
+			WindowSize.getY() / 2 + 16 - 200),
+			new Vector2(32, 32), new Rectangle(0, 0, 32, 32),
+			1,
+			new Vector2(16, 16),
+			BLUE
+		));
+
+		movableObjectTest.add(new MovableObject(
+			new Vector2(WindowSize.getX() / 2 - 16 - 200,
+			WindowSize.getY() / 2 + 16 - 200),
+			new Vector2(32, 32), new Rectangle(0, 0, 32, 32),
+			1,
+			new Vector2(16, 16),
+			BLUE
+		));
+		// movableObjectTest.get(0).setBounceForce(0.70f);
 		
 		physicCore = new PhysicCore();
 
@@ -137,8 +182,18 @@ public class Core
 
 		if (isKeyPressed(KEY_R))
 		{
-			movableObjectTest.get(0).setPosition(new Vector2(WindowSize.getX() / 2 - 25 + 100,
-			WindowSize.getY() / 2 + 25 - 200));
+			movableObjectTest.get(0).setPosition(new Vector2(WindowSize.getX() / 2 - 16 + 100,
+			WindowSize.getY() / 2 + 16 - 200));
+			movableObjectTest.get(1).setPosition(new Vector2(WindowSize.getX() / 2 - 16 + 150,
+			WindowSize.getY() / 2 + 16 - 200));
+			movableObjectTest.get(2).setPosition(new Vector2(WindowSize.getX() / 2 - 16 + 200,
+			WindowSize.getY() / 2 + 16 - 200));
+			movableObjectTest.get(3).setPosition(new Vector2(WindowSize.getX() / 2 - 16 - 100,
+			WindowSize.getY() / 2 + 16 - 200));
+			movableObjectTest.get(4).setPosition(new Vector2(WindowSize.getX() / 2 - 16 - 150,
+			WindowSize.getY() / 2 + 16 - 200));
+			movableObjectTest.get(5).setPosition(new Vector2(WindowSize.getX() / 2 - 16 - 200,
+			WindowSize.getY() / 2 + 16 - 200));
 			// new Vector2(WindowSize.getX() / 2 - 25 + 100,
 			// WindowSize.getY() / 2 + 25 - 200)
 		}
@@ -163,25 +218,39 @@ public class Core
 		{
 			platform.drawPlatform();
 		}
-
-		// Update the player 
-		player.update();
-
+		
 		// Apply gravity to the player
 		physicCore.gravity.applyGravity(player);
-
+		
 		// Draw the movable object
 		for (MovableObject movableObject : movableObjectTest)
 		{
 			physicCore.collision.checkObjectCollisions(movableObject, platformTest, physicCore.gravity);
 			physicCore.gravity.applyGravity(movableObject);
-			physicCore.collision.checkPlayerMovableObjectCollision(player, movableObject, physicCore.gravity);
+			physicCore.collision.checkPlayerMovableObjectCollision(player, movableObject, physicCore.gravity, true);
+
+			if (player.movement.getWeaponHitCounter() > 0)
+			{
+				physicCore.collision.checkPlayerWeaponCollision(player, movableObject, physicCore.gravity);
+			}
+
+			for (MovableObject movableObject2 : movableObjectTest)
+			{
+				if (movableObject == movableObject2)
+				{
+					continue;
+				}
+				physicCore.collision.checkPlayerMovableObjectCollision(movableObject2, movableObject, physicCore.gravity, false);
+			}
+
 			movableObject.applyMovement(movableObject.getPosition(), movableObject.getColisionBox(), movableObject.getVelocity());
 			movableObject.update();
 		}
+		
+		// Update the player 
+		player.update();
 
 		// physicCore.collision.checkObjectCollisions(player, movableObjectTest, physicCore.gravity);
-		
 	}
 
 	void renderOnScreen()
@@ -215,9 +284,24 @@ public class Core
 			collBoxSize.getY()
 		);
 
+		Rectangle weaponColisionBox = new Rectangle(
+			playerColisionSize.getX(),
+			playerColisionSize.getY(),
+			34,
+			38
+		);
+
 		Vector2 playerOffset = new Vector2(WindowSize.getX() / 2, WindowSize.getY() / 2);
 
-		player = new Player(playerPos, playerSize, playerColisionSize, playerScale, playerOffset);
+		player = new Player(
+			playerPos,
+			playerSize,
+			playerColisionSize,
+			weaponColisionBox,
+			playerScale,
+			playerOffset
+		);
+
 		new InitPlayer(PlayerType.ICHIGO, player, playerPos, playerSize);
 		player.setBounceForce(0.0f);
 	}
