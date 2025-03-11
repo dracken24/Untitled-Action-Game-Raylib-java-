@@ -32,7 +32,7 @@ public class Collision
 	float veloxityMosifierX = 6;
 
 	// float veloxityMosifierObjY = 7;
-	float veloxityMosifierObjX = 2;
+	float veloxityMosifierObjX = 2f;
 
 	// float veloxityWeaponMosifierY = 6;
 	float veloxityWeaponMosifierX = 28;
@@ -61,12 +61,12 @@ public class Collision
 					if (!isPlayer)
 					{
 						player.setPosition(new Vector2(
-							player.getPosition().getX() + adjustment/2,
+							player.getPosition().getX() + adjustment / 2,
 							player.getPosition().getY()
 						));
 					}
 					movableObject.setPosition(new Vector2(
-						movableObject.getPosition().getX() - adjustment/2,
+						movableObject.getPosition().getX() - adjustment / 2,
 						movableObject.getPosition().getY()
 					));
 					
@@ -91,12 +91,12 @@ public class Collision
 					if (!isPlayer)
 					{
 						player.setPosition(new Vector2(
-							player.getPosition().getX() - adjustment/2,
+							player.getPosition().getX() - adjustment / 2,
 							player.getPosition().getY()
 						));
 					}
 					movableObject.setPosition(new Vector2(
-						movableObject.getPosition().getX() + adjustment/2,
+						movableObject.getPosition().getX() + adjustment / 2,
 						movableObject.getPosition().getY()
 					));
 					
@@ -154,7 +154,7 @@ public class Collision
 					-veloxityWeaponMosifierX - obj.getVelocity().getX(),
 					movableObject.getVelocity().getY()
 				));
-				break;	
+				break;
 			case "RIGHT":
 				// System.out.println("RIGHT collision");
 				obj.setVelocity(new Vector2(

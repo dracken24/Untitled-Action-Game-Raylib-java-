@@ -39,6 +39,8 @@ import static com.raylib.Raylib.endMode2D;
 import static com.raylib.Raylib.endTextureMode;
 import static com.raylib.Raylib.WHITE;
 import static com.raylib.Raylib.BLUE;
+import static com.raylib.Raylib.PURPLE;
+import static com.raylib.Raylib.DARKBLUE;
 
 import com.objects.Platform;
 import com.enums.PlayerType;
@@ -104,7 +106,7 @@ public class Core
 			new Vector2(32, 32), new Rectangle(0, 0, 32, 32),
 			1,
 			new Vector2(16, 16),
-			BLUE
+			PURPLE
 		));
 
 		movableObjectTest.add(new MovableObject(
@@ -113,7 +115,7 @@ public class Core
 			new Vector2(32, 32), new Rectangle(0, 0, 32, 32),
 			1,
 			new Vector2(16, 16),
-			BLUE
+			DARKBLUE
 		));
 
 		movableObjectTest.add(new MovableObject(
@@ -131,7 +133,7 @@ public class Core
 			new Vector2(32, 32), new Rectangle(0, 0, 32, 32),
 			1,
 			new Vector2(16, 16),
-			BLUE
+			PURPLE
 		));
 
 		movableObjectTest.add(new MovableObject(
@@ -140,7 +142,7 @@ public class Core
 			new Vector2(32, 32), new Rectangle(0, 0, 32, 32),
 			1,
 			new Vector2(16, 16),
-			BLUE
+			DARKBLUE
 		));
 		// movableObjectTest.get(0).setBounceForce(0.70f);
 		

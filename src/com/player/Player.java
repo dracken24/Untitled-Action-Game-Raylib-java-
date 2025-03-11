@@ -112,7 +112,7 @@ public class Player implements IMovable
 	void adjustWeaponCollBox()
 	{
 		float x = movement.getRightSide() ?
-			-(this.weaponColisionBox.getWidth() * scale) :
+			-(this.weaponColisionBox.getWidth() * this.scale) :
 				(this.colisionBox.getWidth() * this.scale);
 
 		float y = (this.colisionBox.getHeight() - this.weaponColisionBox.getHeight());
