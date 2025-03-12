@@ -15,9 +15,10 @@
 package com.player;
 
 import com.objects.SpriteSheet;
-import com.raylib.Vector2;
 import com.enums.SpriteMovement;
 import com.enums.PlayerType;
+
+import com.raylib.Vector2;
 
 public class InitPlayer
 {

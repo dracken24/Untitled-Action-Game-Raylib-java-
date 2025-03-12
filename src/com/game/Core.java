@@ -31,12 +31,19 @@ import static com.raylib.Raylib.VIOLET;
 import static com.raylib.Raylib.LIGHTGRAY;
 import static com.raylib.Raylib.isKeyPressed;
 
+import static com.raylib.Raylib.KeyboardKey.KEY_A;
+import static com.raylib.Raylib.KeyboardKey.KEY_D;
+import static com.raylib.Raylib.KeyboardKey.KEY_S;
+import static com.raylib.Raylib.KeyboardKey.KEY_W;
+import static com.raylib.Raylib.isKeyDown;
+
 import com.raylib.Vector2;
 import com.raylib.Camera2D;
 import com.raylib.Rectangle;
 import static com.raylib.Raylib.beginMode2D;
 import static com.raylib.Raylib.endMode2D;
 import static com.raylib.Raylib.endTextureMode;
+import static com.raylib.Raylib.getScreenWidth;
 import static com.raylib.Raylib.WHITE;
 import static com.raylib.Raylib.BLUE;
 import static com.raylib.Raylib.PURPLE;
@@ -46,6 +53,8 @@ import com.objects.Platform;
 import com.enums.PlayerType;
 import com.objects.MovableObject;
 import com.player.Player;
+import com.enemy.Enemy;
+import com.enemy.InitEnemy;
 import com.player.InitPlayer;
 import com.physic.PhysicCore;
 
@@ -59,6 +68,7 @@ public class Core
 	String		title;
 
 	Player		player;
+	Enemy		enemyTest;
 
 	PhysicCore	physicCore;
 
@@ -66,6 +76,8 @@ public class Core
 	List<Platform>	platformTest;
 
 	Cameras	cameras;
+
+	Vector2 positionFreeCam = new Vector2(0, 0);
 
 /***********************************************************************************/
 /***                                 CONSTRUCTOR                                   */
@@ -81,19 +93,20 @@ public class Core
 
 		// Initialize the player
 		initPlayer();
+		initEnemy01();
 
 		// Initialize the platform
 		platformTest = new ArrayList<Platform>();
-		platformTest.add(new Platform(WindowSize.getX() / 2 - 150, WindowSize.getY() / 2 + 200, 300, 40));
-		platformTest.add(new Platform(WindowSize.getX() / 2 - 480, WindowSize.getY() / 2 + 360, 300, 40));
-		platformTest.add(new Platform(WindowSize.getX() / 2 + 180, WindowSize.getY() / 2 + 360, 300, 40));
-		platformTest.add(new Platform(WindowSize.getX() / 2 - 800, WindowSize.getY() / 2 + 520, 1600, 60));
+		platformTest.add(new Platform(- 150, 200, 300, 40));
+		platformTest.add(new Platform(- 480, 360, 300, 40));
+		platformTest.add(new Platform(180, 360, 300, 40));
+		platformTest.add(new Platform(- 800, 520, 1600, 60));
 
 		// Initialize the movable object
 		movableObjectTest = new ArrayList<MovableObject>();
 		movableObjectTest.add(new MovableObject(
-			new Vector2(WindowSize.getX() / 2 - 16 + 100,
-			WindowSize.getY() / 2 + 16 - 200),
+			new Vector2(-16 + 100,
+			16 - 200),
 			new Vector2(32, 32), new Rectangle(0, 0, 32, 32),
 			1,
 			new Vector2(16, 16),
@@ -101,8 +114,8 @@ public class Core
 		));
 
 		movableObjectTest.add(new MovableObject(
-			new Vector2(WindowSize.getX() / 2 - 16 + 150,
-			WindowSize.getY() / 2 + 16 - 200),
+			new Vector2(-16 + 150,
+			16 - 200),
 			new Vector2(32, 32), new Rectangle(0, 0, 32, 32),
 			1,
 			new Vector2(16, 16),
@@ -110,8 +123,8 @@ public class Core
 		));
 
 		movableObjectTest.add(new MovableObject(
-			new Vector2(WindowSize.getX() / 2 - 16 + 200,
-			WindowSize.getY() / 2 + 16 - 200),
+			new Vector2(-16 + 200,
+			16 - 200),
 			new Vector2(32, 32), new Rectangle(0, 0, 32, 32),
 			1,
 			new Vector2(16, 16),
@@ -119,8 +132,8 @@ public class Core
 		));
 
 		movableObjectTest.add(new MovableObject(
-			new Vector2(WindowSize.getX() / 2 - 16 - 100,
-			WindowSize.getY() / 2 + 16 - 200),
+			new Vector2(-16 - 100,
+			16 - 200),
 			new Vector2(32, 32), new Rectangle(0, 0, 32, 32),
 			1,
 			new Vector2(16, 16),
@@ -128,8 +141,8 @@ public class Core
 		));
 
 		movableObjectTest.add(new MovableObject(
-			new Vector2(WindowSize.getX() / 2 - 16 - 150,
-			WindowSize.getY() / 2 + 16 - 200),
+			new Vector2(-16 - 150,
+			16 - 200),
 			new Vector2(32, 32), new Rectangle(0, 0, 32, 32),
 			1,
 			new Vector2(16, 16),
@@ -137,13 +150,20 @@ public class Core
 		));
 
 		movableObjectTest.add(new MovableObject(
-			new Vector2(WindowSize.getX() / 2 - 16 - 200,
-			WindowSize.getY() / 2 + 16 - 200),
+			new Vector2(-16 - 200,
+			16 - 200),
 			new Vector2(32, 32), new Rectangle(0, 0, 32, 32),
 			1,
 			new Vector2(16, 16),
 			DARKBLUE
 		));
+
+		movableObjectTest.get(0).setPosition(new Vector2(- 16 + 100, 16 - 200));
+		movableObjectTest.get(1).setPosition(new Vector2(- 16 + 150, 16 - 200));
+		movableObjectTest.get(2).setPosition(new Vector2(- 16 + 200, 16 - 200));
+		movableObjectTest.get(3).setPosition(new Vector2(- 16 - 100, 16 - 200));
+		movableObjectTest.get(4).setPosition(new Vector2(- 16 - 150, 16 - 200));
+		movableObjectTest.get(5).setPosition(new Vector2(- 16 - 200, 16 - 200));
 		// movableObjectTest.get(0).setBounceForce(0.70f);
 		
 		physicCore = new PhysicCore();
@@ -152,7 +172,7 @@ public class Core
 
 		Rectangle recForCam = new Rectangle(0, 0, windowSize.getX(), windowSize.getY());
 		cameras.initOneCamera(cameras.getMainCamera(), recForCam, windowSize);
-		cameras.getMainCamera().setOffset(new Vector2(0, 0));
+		cameras.getMainCamera().setOffset(new Vector2(windowSize.getX() / 2, windowSize.getY() / 2));
 		cameras.setTargetToFollow(player.getPosition());
 	}
 
@@ -164,6 +184,9 @@ public class Core
 	{
 		// For adjust the camera to follow the player
 		followCamera(player.getPosition());
+		// followCamera(enemyTest.getPosition());
+		// followCamera(positionFreeCam);
+		// freeCamera(positionFreeCam);
 
 		// Check collisions between the player and the platforms
 		physicCore.collision.checkObjectCollisions(player, platformTest, physicCore.gravity);
@@ -184,18 +207,12 @@ public class Core
 
 		if (isKeyPressed(KEY_R))
 		{
-			movableObjectTest.get(0).setPosition(new Vector2(WindowSize.getX() / 2 - 16 + 100,
-			WindowSize.getY() / 2 + 16 - 200));
-			movableObjectTest.get(1).setPosition(new Vector2(WindowSize.getX() / 2 - 16 + 150,
-			WindowSize.getY() / 2 + 16 - 200));
-			movableObjectTest.get(2).setPosition(new Vector2(WindowSize.getX() / 2 - 16 + 200,
-			WindowSize.getY() / 2 + 16 - 200));
-			movableObjectTest.get(3).setPosition(new Vector2(WindowSize.getX() / 2 - 16 - 100,
-			WindowSize.getY() / 2 + 16 - 200));
-			movableObjectTest.get(4).setPosition(new Vector2(WindowSize.getX() / 2 - 16 - 150,
-			WindowSize.getY() / 2 + 16 - 200));
-			movableObjectTest.get(5).setPosition(new Vector2(WindowSize.getX() / 2 - 16 - 200,
-			WindowSize.getY() / 2 + 16 - 200));
+			movableObjectTest.get(0).setPosition(new Vector2(- 16 + 100, 16 - 200));
+			movableObjectTest.get(1).setPosition(new Vector2(- 16 + 150, 16 - 200));
+			movableObjectTest.get(2).setPosition(new Vector2(- 16 + 200, 16 - 200));
+			movableObjectTest.get(3).setPosition(new Vector2(- 16 - 100, 16 - 200));
+			movableObjectTest.get(4).setPosition(new Vector2(- 16 - 150, 16 - 200));
+			movableObjectTest.get(5).setPosition(new Vector2(- 16 - 200, 16 - 200));
 			// new Vector2(WindowSize.getX() / 2 - 25 + 100,
 			// WindowSize.getY() / 2 + 25 - 200)
 		}
@@ -209,11 +226,11 @@ public class Core
 
 	void onDrawning()
 	{
-		drawText("Deplacement Gauche Droite: A & D", 10, 150, 20, VIOLET);
-		drawText("Sauter : Espace", 10, 170, 20, VIOLET);
-		drawText("Attaque: Clic Gauche", 10, 190, 20, VIOLET);
-		drawText("B: Set Colision Box Visible", 10, 220, 20, VIOLET);
-		drawText("R: Reset Player Position", 10, 240, 20, VIOLET);
+		drawText("Deplacement Gauche Droite: A & D", -(int)(WindowSize.getX() / 2) + 10, -(int)(WindowSize.getY() / 2) + 150, 20, VIOLET);
+		drawText("Sauter : Espace", -(int)(WindowSize.getX() / 2) + 10, -(int)(WindowSize.getY() / 2) + 170, 20, VIOLET);
+		drawText("Attaque: Clic Gauche", -(int)(WindowSize.getX() / 2) + 10, -(int)(WindowSize.getY() / 2) + 190, 20, VIOLET);
+		drawText("B: Set Colision Box Visible", -(int)(WindowSize.getX() / 2) + 10, -(int)(WindowSize.getY() / 2) + 220, 20, VIOLET);
+		drawText("R: Reset Player Position", -(int)(WindowSize.getX() / 2) + 10, -(int)(WindowSize.getY() / 2) + 240, 20, VIOLET);
 	
 		// Draw the platform
 		for (Platform platform : platformTest)
@@ -223,6 +240,7 @@ public class Core
 		
 		// Apply gravity to the player
 		physicCore.gravity.applyGravity(player);
+		// physicCore.gravity.applyGravity(enemyTest);
 		
 		// Draw the movable object
 		for (MovableObject movableObject : movableObjectTest)
@@ -251,6 +269,7 @@ public class Core
 		
 		// Update the player 
 		player.update();
+		// enemyTest.update();
 
 		// physicCore.collision.checkObjectCollisions(player, movableObjectTest, physicCore.gravity);
 	}
@@ -269,6 +288,26 @@ public class Core
 			new Vector2(0, 0),
 			WHITE
 		);
+	}
+
+	void freeCamera(Vector2 position)
+	{
+		if (isKeyDown(KEY_W))
+		{
+			position.setY(position.getY() - 4);
+		}
+		if (isKeyDown(KEY_S))
+		{
+			position.setY(position.getY() + 4);
+		}
+		if (isKeyDown(KEY_A))
+		{
+			position.setX(position.getX() - 4);
+		}
+		if (isKeyDown(KEY_D))
+		{
+			position.setX(position.getX() + 4);
+		}
 	}
 
 	// TODO: Adjust this function with player choice lather
@@ -293,7 +332,7 @@ public class Core
 			38
 		);
 
-		Vector2 playerOffset = new Vector2(WindowSize.getX() / 2, WindowSize.getY() / 2);
+		Vector2 playerOffset = new Vector2(0, 0);
 
 		player = new Player(
 			playerPos,
@@ -306,5 +345,48 @@ public class Core
 
 		new InitPlayer(PlayerType.ICHIGO, player, playerPos, playerSize);
 		player.setBounceForce(0.0f);
+	}
+
+	void initEnemy01()
+	{
+		Vector2 enemyPos = new Vector2(0, 0);
+		Vector2 enemySize = new Vector2(70, 70);
+		Vector2 collBoxSize = new Vector2(22, 55);
+		int enemyScale = 2;
+
+		Rectangle enemyColisionSize = new Rectangle(
+			-(11 * enemyScale),
+			-(enemySize.getY() / 2 * enemyScale) + ((enemySize.getY() - collBoxSize.getY()) * enemyScale) - enemyScale,
+			collBoxSize.getX(),
+			collBoxSize.getY()
+		);
+
+		Rectangle weaponColisionBox = new Rectangle(
+			enemyColisionSize.getX(),
+			enemyColisionSize.getY(),
+			34,
+			38
+		);
+
+		Vector2 enemyOffset = new Vector2(0, 0);
+
+		enemyTest = new Enemy(
+			enemyPos,
+			enemySize,
+			enemyColisionSize,
+			weaponColisionBox,
+			enemyScale,
+			enemyOffset
+		);
+
+		new InitEnemy(enemyTest, enemyPos, enemySize);
+
+		enemyTest.setBounceForce(0.0f);
+		enemyTest.setPosition(new Vector2(WindowSize.getX() / 2, WindowSize.getY() / 2));
+
+		Rectangle rec = enemyTest.getColisionBox();
+		rec.setX(WindowSize.getX() / 2);
+		rec.setY(WindowSize.getY() / 2);
+		enemyTest.setColisionBox(weaponColisionBox);
 	}
 }
