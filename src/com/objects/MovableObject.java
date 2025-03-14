@@ -70,7 +70,7 @@ public class MovableObject implements IMovable
 		lastPosition = new Vector2(0, 0);
 		isJumping = false;
 		isWallCollide = false;
-		fallSpeedMax = 10;
+		fallSpeedMax = 14;
 		lastVelocity = new Vector2(0, 0);
 
 		initialPosition = new Vector2(position.getX(), position.getY());
@@ -121,10 +121,13 @@ public class MovableObject implements IMovable
             {
                 velocity.setY(fallSpeedMax);
             }
+			// Add a little horizontal friction
+			velocity.setX(velocity.getX() * 0.98f);
         }
-        
-        // Add a little horizontal friction
-        velocity.setX(velocity.getX() * 0.98f);
+		else
+		{
+			velocity.setX(velocity.getX() * 0.92f);
+		}
         
         // Stop the movement if the speed is very low
         if (Math.abs(velocity.getX()) < 0.01f)

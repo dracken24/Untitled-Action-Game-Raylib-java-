@@ -23,40 +23,146 @@ import com.player.Player;
 import com.objects.Platform;
 import com.enums.SpriteMovement;
 
+
 import java.util.List;
 
 public class Collision
 {
-	public void checkPlayerMovableObjectCollision(IMovable player,  IMovable movableObject, Gravity gravity)
+	float veloxityMosifierY = 6;
+	float veloxityMosifierX = 6;
+
+	// float veloxityMosifierObjY = 7;
+	float veloxityMosifierObjX = 2f;
+
+	// float veloxityWeaponMosifierY = 6;
+	float veloxityWeaponMosifierX = 28;
+
+	public void checkPlayerMovableObjectCollision(IMovable player, IMovable movableObject, Gravity gravity, boolean isPlayer)
 	{
-		Rectangle playerCollBox = ((Player)player).getColisionBoxPlusOffset();
+		Rectangle playerCollBox = player instanceof Player ? ((Player)player).getColisionBoxPlusOffset() : player.getColisionBox();
 		Rectangle objectCollBox = movableObject.getColisionBox();
 
+		String collisionSide = gravity.checkCollision(playerCollBox, objectCollBox);
+		
+		// Use the absolute value of the velocity to have the same force in both directions
+		float baseVelocity = Math.abs(player.getVelocity().getX());
+		float velocityModifier = isPlayer ? veloxityMosifierX : baseVelocity / 2 + veloxityMosifierObjX;
+
+		if (!collisionSide.equals("NONE"))
+		{
+			float adjustment = 0;
+			
+			switch(collisionSide)
+			{
+				case "LEFT":
+					adjustment = objectCollBox.getX() + objectCollBox.getWidth() - playerCollBox.getX();
+					
+					// Ajust the position of the player and the object
+					if (!isPlayer)
+					{
+						player.setPosition(new Vector2(
+							player.getPosition().getX() + adjustment / 2,
+							player.getPosition().getY()
+						));
+					}
+					movableObject.setPosition(new Vector2(
+						movableObject.getPosition().getX() - adjustment / 2,
+						movableObject.getPosition().getY()
+					));
+					
+					// Apply the velocities in a symmetrical way
+					if (!isPlayer)
+					{
+						((MovableObject)player).setVelocity(new Vector2(
+							velocityModifier,
+							player.getVelocity().getY()
+						));
+					}
+					((MovableObject)movableObject).setVelocity(new Vector2(
+						-velocityModifier,
+						movableObject.getVelocity().getY()
+					));
+					break;
+
+				case "RIGHT":
+					adjustment = playerCollBox.getX() + playerCollBox.getWidth() - objectCollBox.getX();
+					
+					// Adjust the position of the player and the object
+					if (!isPlayer)
+					{
+						player.setPosition(new Vector2(
+							player.getPosition().getX() - adjustment / 2,
+							player.getPosition().getY()
+						));
+					}
+					movableObject.setPosition(new Vector2(
+						movableObject.getPosition().getX() + adjustment / 2,
+						movableObject.getPosition().getY()
+					));
+					
+					// Apply the velocities in a symmetrical way
+					if (!isPlayer)
+					{
+						((MovableObject)player).setVelocity(new Vector2(
+							-velocityModifier,
+							player.getVelocity().getY()
+						));
+					}
+					((MovableObject)movableObject).setVelocity(new Vector2(
+						velocityModifier,
+						movableObject.getVelocity().getY()
+					));
+					break;
+			}
+		}
+	}
+
+	public void checkPlayerWeaponCollision(Player player, MovableObject movableObject, Gravity gravity)
+	{
+		Rectangle weaponCollBox = player.getWeaponCollisonBoxPlusOffset();
+		Rectangle objectCollBox = movableObject.getColisionBox();
+		boolean playerSide = player.movement.getRightSide();
+
 		String collisionSide = gravity.checkCollision(
-			playerCollBox,
+			weaponCollBox,
 			objectCollBox
 		);
 
-		
-		// System.out.println("objectCollBox: " + objectCollBox.getX() + " y: " + objectCollBox.getY());
-		// System.out.println("Collision side: " + collisionSide);
-		System.out.println("velocity: " + movableObject.getVelocity().getX());
-
-		switch(collisionSide)
+		if (collisionSide.equals("TOP") || collisionSide.equals("BOTTOM"))
 		{
-			case "BOTTOM":
-				break;
-			case "TOP":
-				break;
+			if (!playerSide)
+			{
+				collisionSide = "RIGHT";
+			}
+			else
+			{
+				collisionSide = "LEFT";
+			}
+		}
+
+		// System.out.println("collisionSide: " + collisionSide);
+		// System.out.println("weaponCollBox : " + weaponCollBox.getX() + " " + weaponCollBox.getY());
+		// System.out.println("objectCollBox : " + objectCollBox.getX() + " " + objectCollBox.getY());
+
+		MovableObject obj = ((MovableObject)movableObject);
+		
+		switch (collisionSide)
+		{
 			case "LEFT":
-				break;
-			case "RIGHT":
-				System.out.println(movableObject.getPosition().getX() - (playerCollBox.getX() - (objectCollBox.getX()) - objectCollBox.getWidth()));
-				// Push movable to the left
-				((MovableObject)movableObject).setVelocity(new Vector2(
-					10,
+				// System.out.println("LEFT collision");
+				obj.setVelocity(new Vector2(
+					-veloxityWeaponMosifierX - obj.getVelocity().getX(),
 					movableObject.getVelocity().getY()
 				));
+				break;
+			case "RIGHT":
+				// System.out.println("RIGHT collision");
+				obj.setVelocity(new Vector2(
+					veloxityWeaponMosifierX - obj.getVelocity().getX(),
+					movableObject.getVelocity().getY()
+				));
+				break;
+			default:
 				break;
 		}
 	}
@@ -98,6 +204,12 @@ public class Collision
 				{
 					case "BOTTOM":
 						adjustment = objectCollisionBox.getY() + objectCollisionBox.getHeight() - platformRect.getY();
+
+						// Ajuster la position avant d'appliquer le rebond
+						objectToCheck.setPosition(new Vector2(
+							objectToCheck.getPosition().getX(),
+							objectToCheck.getPosition().getY() - adjustment
+						));
 						
 						if (objectToCheck instanceof Player)
 						{
@@ -139,14 +251,6 @@ public class Collision
 								obj.setIsJumping(true);
 								obj.setIsAtRest(false);
 							}
-						}
-
-						if (Math.abs(adjustment) < 2.0f || objectToCheck instanceof Player)
-						{
-							objectToCheck.setPosition(new Vector2(
-								objectToCheck.getPosition().getX(),
-								objectToCheck.getPosition().getY() - adjustment
-							));
 						}
 						break;
 
@@ -212,17 +316,6 @@ public class Collision
 				obj.setIsWallCollide(false);
 				obj.setIsAtRest(true);
 			}
-
-			// if (objectToCheck instanceof MovableObject)
-			// {
-			// 	MovableObject obj = (MovableObject)objectToCheck;
-
-			// 	System.out.println("*****************");
-			// 	System.out.println("isJumping: " + obj.getIsJumping());
-			// 	System.out.println("isAtRest: " + obj.getIsAtRest());
-			// 	System.out.println("velocity: " + obj.getVelocity().getY());
-			// 	System.out.println("*****************");
-			// }
 		}
 
 		if (!onGround)

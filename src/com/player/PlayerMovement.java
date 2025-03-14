@@ -55,12 +55,14 @@ public class PlayerMovement
 
     int actionCounter;
     int attackCounter;
+    int weaponHitCounter;
 
     Vector2 velocity;
     Vector2 velocityMinMax_Y;
     Vector2 velocityMinMax_X;
     Vector2 lastPlayerPosition;
     float fallSpeedMax;
+    float jumpForce;
 
     boolean isJumping;
     boolean isAtRest;
@@ -78,11 +80,13 @@ public class PlayerMovement
         lastAction = null;
         actionCounter = 0;
         attackCounter = 0;
+        weaponHitCounter = 0;
         velocity = new Vector2(0, 0);
         velocityMinMax_Y = new Vector2(0, 12);
         velocityMinMax_X = new Vector2(0, 4);
         lastPlayerPosition = new Vector2(0, 0);
-        fallSpeedMax = 12;
+        jumpForce = -14;
+        fallSpeedMax = 16;
         isJumping = false;
         isWallCollide = false;
     }
@@ -127,7 +131,7 @@ public class PlayerMovement
         if (isJumping || isAtRest)
         {
             // add gravity
-            velocity.setY(velocity.getY() + 0.5f);
+            // velocity.setY(velocity.getY() + 0.5f);
             
             // limit the max fall speed
             if (velocity.getY() > fallSpeedMax)
@@ -135,7 +139,7 @@ public class PlayerMovement
                 velocity.setY(fallSpeedMax);
             }
 
-            // velocity.setY(velocity.getY() + 0.0001f);
+            velocity.setY(velocity.getY() + 0.4f);
         }
         else
         {
@@ -201,7 +205,7 @@ public class PlayerMovement
             }
             if (velocity.getY() == 0)
             {
-                velocity.setY(-16);
+                velocity.setY(jumpForce);
             }
             isKeyDown = true;
             isJumping = true;
@@ -213,6 +217,7 @@ public class PlayerMovement
             {
                 this.actionInProgress = SpriteMovement.ATTACK01;
                 attackCounter = attack01.getAnimationTotalFrame();
+                weaponHitCounter = 10;
             }
 		}
 
@@ -230,6 +235,10 @@ public class PlayerMovement
         if (attackCounter > 0)
         {
             attackCounter--;
+        }
+        if (weaponHitCounter > 0)
+        {
+            weaponHitCounter--;
         }
 	}
 
@@ -307,6 +316,11 @@ public class PlayerMovement
         return isAtRest;
     }
 
+    public boolean getRightSide()
+    {
+        return rightSide;
+    }
+
     public int getActionCounter()
     {
         return actionCounter;
@@ -315,6 +329,11 @@ public class PlayerMovement
     public SpriteMovement getActionInProgress()
     {
         return actionInProgress;
+    }
+
+    public int getWeaponHitCounter()
+    {
+        return weaponHitCounter;
     }
 
 /***********************************************************************************/

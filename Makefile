@@ -18,7 +18,10 @@ JAVA_FILES = src/App.java \
             src/com/game/Cameras.java \
             src/com/objects/MovableObject.java \
             src/com/interfaces/IMovable.java \
-            src/com/physic/Collision.java
+            src/com/physic/Collision.java \
+            src/com/enemy/Enemy.java \
+            src/com/enemy/EnemyMovement.java \
+            src/com/enemy/InitEnemy.java
 
 all: compile
 

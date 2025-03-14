@@ -3,16 +3,16 @@
 /*               -------------------------------------------------                 */
 /*                PROJET: Java Dev          PAR: Dracken24                         */
 /*               -------------------------------------------------                 */
-/*                CREATED: 28-2nd-2025                                             */
+/*                CREATED: 12-3rd-2025                                             */
 /*                MODIFIED BY: Dracken24                                           */
-/*                LAST MODIFIED: 28-2nd-2025                                       */
+/*                LAST MODIFIED: 12-3rd-2025                                       */
 /*               -------------------------------------------------                 */
-/*                FILE: Player.java                                                */
+/*                FILE: Enemy.java                                                 */
 /*               -------------------------------------------------                 */
 /* ---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~--- */
 /* =============================================================================== */
 
-package com.player;
+package com.enemy;
 
 import com.enums.SpriteMovement;
 import com.raylib.Vector2;
@@ -28,13 +28,13 @@ import com.raylib.Rectangle;
 
 import com.interfaces.IMovable;
 
-public class Player implements IMovable
+public class Enemy implements IMovable
 {
 /***********************************************************************************/
 /***                                 VARIABLES                                     */
 /***********************************************************************************/
 
-	public PlayerMovement	movement;
+	public EnemyMovement	movement;
 	Vector2		position;
 	Vector2		size;
 	Rectangle	colisionBox;
@@ -46,19 +46,19 @@ public class Player implements IMovable
 	Vector2		initialPosition;
 	Rectangle	initialColisionBox;
 
-	private float bounceForce;
+	float		bounceForce;
 
 	public static Color RED_SHADOW = new Color((byte)230, (byte)41, (byte)55, (byte)105);
-	public static Color DARKPURPLE_SHADOW = new Color((byte)112, (byte)31, (byte)126, (byte)105);
-	
+	public static Color DARKPURPLE_SHADOW = new Color((byte)122, (byte)141, (byte)136, (byte)105);
+
 /***********************************************************************************/
 /***                                 CONSTRUCTOR                                   */
 /***********************************************************************************/
 
-	public Player(Vector2 position, Vector2 size, Rectangle colisionBox,
+	public Enemy(Vector2 position, Vector2 size, Rectangle colisionBox,
 		Rectangle weaponColisionBox, int scale, Vector2 offset)
 	{
-		movement = new PlayerMovement();
+		movement = new EnemyMovement();
 		this.position = position;
 		this.size = size;
 		this.scale = scale;
@@ -72,7 +72,7 @@ public class Player implements IMovable
 	}
 
 /***********************************************************************************/
-/***                                 FUNCTIONS                                   ***/
+/***                                 FUNCTIONS                                     */
 /***********************************************************************************/
 
 	boolean isDebug = true;
@@ -88,16 +88,17 @@ public class Player implements IMovable
 			drawColisionBox();
 			// System.out.println("Weapon coll box x: " + this.weaponColisionBox.getX() + "  y: " + this.weaponColisionBox.getY() );
 		}
-		
-		System.out.println("Player Position: " + position.getX() + " y: " + position.getY());	
-		adjustWeaponCollBox();
+
+		// System.out.println("Enemy Position: " + position.getX() + " y: " + position.getY());
+		// System.out.println("Enemy CollBox Position: " + colisionBox.getX() + " y: " + colisionBox.getY());	
+		// adjustWeaponCollBox();
 
 		movement.applyMovement(position, colisionBox, movement.getVelocity());
 		movement.update(position, offset);
 		
 		if (movement.getWeaponHitCounter() > 0)
 		{
-			drawWeaponCollisionBox();
+			// drawWeaponCollisionBox();
 		}
 
 		// TODO: For debug
@@ -109,30 +110,6 @@ public class Player implements IMovable
 			initialPosition = new Vector2(position.getX(), position.getY());
 			initialColisionBox = new Rectangle(colisionBox.getX(), colisionBox.getY(), colisionBox.getWidth(), colisionBox.getHeight());
 		}
-	}
-
-	void adjustWeaponCollBox()
-	{
-		float x = movement.getRightSide() ?
-			-(this.weaponColisionBox.getWidth() * this.scale) :
-				(this.colisionBox.getWidth() * this.scale);
-
-		float y = (this.colisionBox.getHeight() - this.weaponColisionBox.getHeight());
-
-		this.weaponColisionBox.setX(this.colisionBox.getX() + x);
-		this.weaponColisionBox.setY(this.colisionBox.getY() + y);
-	}
-
-	void drawWeaponCollisionBox()
-	{
-		Rectangle colBox = new Rectangle(
-			this.weaponColisionBox.getX() + offset.getX(), 
-			this.weaponColisionBox.getY() + offset.getY(), 
-			this.weaponColisionBox.getWidth() * scale,
-			this.weaponColisionBox.getHeight() * scale
-		);
-
-		drawRectangleRec(colBox, RED_SHADOW);
 	}
 
 	void drawColisionBox()
@@ -147,97 +124,69 @@ public class Player implements IMovable
 		drawRectangleRec(colBox, DARKPURPLE_SHADOW);
 	}
 
-	void drawSize()
+	void drawWeaponCollisionBox()
 	{
-		drawRectangleRec(
-			new Rectangle(position.getX() - (size.getX() / 2 * scale) + offset.getX(),
-			position.getY() - (size.getY() / 2 * scale) + offset.getY(),
-			size.getX() * scale,
-			size.getY() * scale), WHITE
+		Rectangle colBox = new Rectangle(
+			this.weaponColisionBox.getX() + offset.getX(), 
+			this.weaponColisionBox.getY() + offset.getY(), 
+			this.weaponColisionBox.getWidth() * scale,
+			this.weaponColisionBox.getHeight() * scale
 		);
+
+		drawRectangleRec(colBox, RED_SHADOW);
 	}
 
 /***********************************************************************************/
 /***                                 GETTERS                                       */
 /***********************************************************************************/
-
+	
 	public Vector2 getPosition()
 	{
-		return position;
-	}
-
-	public Vector2 getVelocity()
-	{
-		return movement.getVelocity();
+		return this.position;
 	}
 
 	public Rectangle getColisionBox()
 	{
-		return colisionBox;
+		return this.colisionBox;
 	}
 
-	public Rectangle getColisionBoxPlusOffset()
+	public Vector2 getVelocity()
 	{
-		return new Rectangle(
-			colisionBox.getX() + offset.getX(), 
-			colisionBox.getY() + offset.getY(), 
-			colisionBox.getWidth() * scale,
-			colisionBox.getHeight() * scale
-		);
-	}
-
-	public Vector2 getOffset()
-	{
-		return offset;
+		return this.movement.getVelocity();
 	}
 
 	public boolean getIsJumping()
 	{
-		return movement.getIsJumping();
+		return this.movement.getIsJumping();
 	}
 
 	public boolean getIsAtRest()
 	{
-		return movement.getIsAtRest();
-	}
-
-	public SpriteMovement getActionInProgress()
-	{
-		return movement.getActionInProgress();
-	}
-
-	public float getBounceForce()
-	{
-		return bounceForce;
-	}
-
-	public Vector2 getCollisionBoxOffset()
-	{
-		return collisionBoxOffset;
-	}
-
-	public Rectangle getWeaponCollisonBox()
-	{
-		return weaponColisionBox;
-	}
-
-	public Rectangle getWeaponCollisonBoxPlusOffset()
-	{
-		return new Rectangle(weaponColisionBox.getX() + offset.getX(), weaponColisionBox.getY() + offset.getY(), weaponColisionBox.getWidth() * scale, weaponColisionBox.getHeight() * scale);
+		return this.movement.getIsAtRest();
 	}
 
 /***********************************************************************************/
 /***                                 SETTERS                                       */
 /***********************************************************************************/
 
-	public void setMovementSide(boolean rightSide)
+	public void setColisionBox(Rectangle colisionBox)
 	{
-		movement.setRightSide(rightSide);
+		this.colisionBox = colisionBox;
 	}
 
-	public void setMovement(SpriteMovement movement)
+	public void setIsJumping(boolean isJumping)
 	{
-		this.movement.setMovement(movement);
+		this.movement.setIsJumping(isJumping);
+	}
+
+	public void setIsAtRest(boolean isAtRest)
+	{
+		this.movement.setIsAtRest(isAtRest);
+	}
+
+	public void setIsWallCollide(boolean isWallCollide)
+	{
+		this.movement.setIsWallCollide(isWallCollide);
 	}
 
 	public void setPosition(Vector2 position)
@@ -245,43 +194,8 @@ public class Player implements IMovable
 		this.position = position;
 	}
 
-	public void setColisionBox(Rectangle colisionBox)
-	{
-		this.colisionBox = colisionBox;
-	}
-
-	public void setOffset(Vector2 offset)
-	{
-		this.offset = offset;
-	}
-
-	public void setIsJumping(boolean isJumping)
-	{
-		movement.setIsJumping(isJumping);
-	}
-
-	public void setIsAtRest(boolean isAtRest)
-	{
-		movement.setIsJumping(isAtRest);
-	}
-
-	public void setActionCounter(int actionCounter)
-	{
-		movement.setActionCounter(actionCounter);
-	}
-
-	public void setIsWallCollide(boolean isWallCollide)
-	{
-		movement.setIsWallCollide(isWallCollide);
-	}
-
 	public void setBounceForce(float bounceForce)
 	{
 		this.bounceForce = bounceForce;
-	}
-
-	public void setWeaponCollisonBox(Rectangle collBox)
-	{
-		this.weaponColisionBox = collBox;
 	}
 }
